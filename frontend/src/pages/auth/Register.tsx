@@ -13,11 +13,11 @@ const Register: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-  
+
   // Toggles de contraseña
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  
+
   // Estados de carga y error
   const [isLoading, setIsLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -76,11 +76,11 @@ const Register: React.FC = () => {
 
       // 2. Experiencia de Usuario Seamless: Iniciar sesión automáticamente tras el registro exitoso
       await login(email, password);
-      
+
       // La redirección ocurrirá automáticamente por el useEffect de isAuthenticated
     } catch (error: any) {
       const errorMsg = error.message || 'Error al registrar usuario';
-      
+
       if (errorMsg.includes('ya registrado') || errorMsg.includes('conflict') || errorMsg.includes('exist')) {
         // Conflicto de email duplicado (409)
         setErrors({ email: 'Este correo electrónico ya está registrado.' });
@@ -100,7 +100,7 @@ const Register: React.FC = () => {
   return (
     <div className="flex-center animate-fade-in" style={{ minHeight: '100vh', padding: '1.5rem', backgroundColor: 'var(--bg-app)' }}>
       <div className="card glass" style={{ width: '100%', maxWidth: '440px', padding: '2.5rem', boxShadow: 'var(--shadow-premium)' }}>
-        
+
         {/* Encabezado */}
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div className="flex-center" style={{ width: '56px', height: '56px', borderRadius: 'var(--radius-md)', backgroundColor: 'var(--primary-light)', color: 'var(--primary)', margin: '0 auto 1rem', boxShadow: 'var(--shadow-sm)' }}>
