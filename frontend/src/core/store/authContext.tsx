@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import type { User } from '../types';
+import type { User, ApiResponse } from '../types';
 import { apiClient } from '../api/apiClient';
 
 interface AuthContextType {
@@ -34,7 +34,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const login = async (email: string, password: string) => {
     setIsLoading(true);
     try {
-      const response = await apiClient.post<{ token: string; user: User }>('/auth/login', {
+      const response = await apiClient.post<ApiResponse<{ token: string; user: User }>>('/auth/login', {
         email,
         password,
       }, false); // false = no requiere auth token en la request de login
@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const register = async (name: string, email: string, password: string) => {
     setIsLoading(true);
     try {
-      await apiClient.post<User>('/auth/register', {
+      await apiClient.post<ApiResponse<User>>('/auth/register', {
         name,
         email,
         password,

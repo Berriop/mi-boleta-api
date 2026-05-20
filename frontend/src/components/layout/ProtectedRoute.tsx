@@ -1,6 +1,7 @@
 import React from 'react';
 import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../core/store/authContext';
+import { Navbar } from './Navbar';
 
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -31,5 +32,12 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, adminO
     return <Navigate to="/403" replace />;
   }
 
-  return <>{children}</>;
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', backgroundColor: 'var(--bg-app)' }}>
+      <Navbar />
+      <main style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
+        {children}
+      </main>
+    </div>
+  );
 };
