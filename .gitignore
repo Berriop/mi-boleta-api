@@ -1,6 +1,6 @@
 node_modules
 dist
-src/infrastructure/prisma-client
+backend/src/infrastructure/prisma-client
 .env
 .env.local
 .DS_Store
