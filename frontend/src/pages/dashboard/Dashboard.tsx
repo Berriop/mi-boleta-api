@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { apiClient, parseValidationError } from '../../core/api/apiClient';
 import type { Ticket, ApiResponse, GameType, TicketStatus } from '../../core/types';
 import {
@@ -56,9 +56,19 @@ const Dashboard: React.FC = () => {
   // Modal de confirmación de eliminación
   const [deletingTicket, setDeletingTicket] = useState<Ticket | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [showNumberGenerator, setShowNumberGenerator] = useState(false);
+
+  // Función para generar número aleatorio con N dígitos
+  const generateRandomNumber = (digits: number) => {
+    const min = Math.pow(10, digits - 1);
+    const max = Math.pow(10, digits) - 1;
+    const randomNum = Math.floor(Math.random() * (max - min + 1)) + min;
+    setGameNumber(randomNum.toString());
+    setShowNumberGenerator(false);
+  };
 
   // Cargar boletas
-  const fetchTickets = async () => {
+  const fetchTickets = useCallback(async () => {
     setIsLoading(true);
     setGeneralError(null);
     try {
@@ -72,16 +82,21 @@ const Dashboard: React.FC = () => {
       const response = await apiClient.get<ApiResponse<Ticket[]>>(`/tickets${queryStr}`);
 
       setTickets(response.data || []);
-    } catch (error: any) {
-      setGeneralError(error.message || 'Error al cargar las boletas');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      setGeneralError(message || 'Error al cargar las boletas');
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [searchQuery, filterStatus, filterGameType]);
 
   useEffect(() => {
-    fetchTickets();
-  }, [searchQuery, filterStatus, filterGameType]);
+    const loadTickets = async () => {
+      await fetchTickets();
+    };
+
+    void loadTickets();
+  }, [fetchTickets]);
 
   // Abrir formulario para agregar
   const handleOpenAdd = () => {
@@ -150,7 +165,7 @@ const Dashboard: React.FC = () => {
             localErrors.status = 'El sorteo no ha jugado aún; el estado debe ser "Pendiente".';
           }
         }
-      } catch (e) {
+      } catch {
         // Si hay problema al parsear la fecha, se ignora aquí y se deja la validación previa
       }
     }
@@ -183,8 +198,9 @@ const Dashboard: React.FC = () => {
 
       setIsDrawerOpen(false);
       fetchTickets();
-    } catch (error: any) {
-      const parsedErrors = parseValidationError(error.message);
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      const parsedErrors = parseValidationError(message);
       setFormErrors(parsedErrors);
     } finally {
       setIsSubmitting(false);
@@ -199,8 +215,9 @@ const Dashboard: React.FC = () => {
       await apiClient.delete(`/tickets/${deletingTicket.id}`);
       setDeletingTicket(null);
       fetchTickets();
-    } catch (error: any) {
-      alert(error.message || 'Error al eliminar la boleta');
+    } catch (error: unknown) {
+      const message = error instanceof Error ? error.message : String(error);
+      alert(message || 'Error al eliminar la boleta');
     } finally {
       setIsDeleting(false);
     }
@@ -234,7 +251,7 @@ const Dashboard: React.FC = () => {
       const date = new Date(dateStr);
       // Formato dd/mm/yyyy en zona horaria local
       return date.toLocaleDateString('es-CO', { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' });
-    } catch (e) {
+    } catch {
       return dateStr;
     }
   };
@@ -780,17 +797,79 @@ const Dashboard: React.FC = () => {
 
                 {/* Número de Boleta */}
                 <div className="form-group">
-                  <label className="form-label">Número Jugado</label>
-                  <input
-                    type="text"
-                    className={`form-input ${formErrors.gameNumber ? 'error' : ''}`}
-                    placeholder="Ej: 4567, 12"
-                    value={gameNumber}
-                    onChange={(e) => setGameNumber(e.target.value)}
-                    disabled={isSubmitting}
-                  />
+                  <label className="form-label">Número de Boleta</label>
+                  <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>
+                    <input
+                      type="text"
+                      className={`form-input ${formErrors.gameNumber ? 'error' : ''}`}
+                      placeholder="Ej: 4567, 12"
+                      value={gameNumber}
+                      onChange={(e) => setGameNumber(e.target.value)}
+                      disabled={isSubmitting}
+                      style={{ flex: 1, height: '2.5rem' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowNumberGenerator(!showNumberGenerator)}
+                      disabled={isSubmitting}
+                      className="btn btn-secondary"
+                      style={{ 
+                        padding: '0.5rem 0.75rem',
+                        height: '2.5rem',
+                        display: 'flex',
+                        alignItems: 'center',
+                        gap: '0.35rem',
+                        fontSize: '0.85rem'
+                      }}
+                      title="Generar número aleatorio"
+                    >
+                      🎲
+                    </button>
+                  </div>
                   {formErrors.gameNumber && <span className="form-error">{formErrors.gameNumber}</span>}
                 </div>
+
+                {/* Dropdown generador de números */}
+                {showNumberGenerator && (
+                  <div style={{
+                    marginTop: '0.5rem',
+                    padding: '0.75rem',
+                    backgroundColor: 'var(--bg-card-hover)',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid var(--border)',
+                    display: 'flex',
+                    gap: '0.5rem',
+                    animation: 'fadeIn 0.15s ease-out'
+                  }}>
+                    <button
+                      type="button"
+                      onClick={() => generateRandomNumber(3)}
+                      disabled={isSubmitting}
+                      className="btn btn-primary"
+                      style={{ flex: 1, fontSize: '0.85rem', padding: '0.4rem' }}
+                    >
+                      3 dígitos
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => generateRandomNumber(4)}
+                      disabled={isSubmitting}
+                      className="btn btn-primary"
+                      style={{ flex: 1, fontSize: '0.85rem', padding: '0.4rem' }}
+                    >
+                      4 dígitos
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => generateRandomNumber(5)}
+                      disabled={isSubmitting}
+                      className="btn btn-primary"
+                      style={{ flex: 1, fontSize: '0.85rem', padding: '0.4rem' }}
+                    >
+                      5 dígitos
+                    </button>
+                  </div>
+                )}
               </div>
 
               {/* Grid: Fecha Sorteo + Valor */}
