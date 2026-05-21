@@ -1,15 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { apiClient, parseValidationError } from '../../core/api/apiClient';
 import type { Ticket, ApiResponse, GameType, TicketStatus } from '../../core/types';
-import { 
-  Plus, 
-  Search, 
-  Trash2, 
-  Edit3, 
-  TrendingUp, 
-  Coins, 
-  Calendar, 
-  Clock, 
+import {
+  Plus,
+  Search,
+  Trash2,
+  Edit3,
+  TrendingUp,
+  Coins,
+  Calendar,
+  Clock,
   Award,
   AlertCircle,
   FileText,
@@ -31,7 +31,7 @@ const Dashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [filterGameType, setFilterGameType] = useState<string>('');
-  
+
   // Drawer / Formulario de Agregar/Editar
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [editingTicket, setEditingTicket] = useState<Ticket | null>(null);
@@ -65,7 +65,7 @@ const Dashboard: React.FC = () => {
 
       const queryStr = params.toString() ? `?${params.toString()}` : '';
       const response = await apiClient.get<ApiResponse<Ticket[]>>(`/tickets${queryStr}`);
-      
+
       setTickets(response.data || []);
     } catch (error: any) {
       setGeneralError(error.message || 'Error al cargar las boletas');
@@ -200,21 +200,21 @@ const Dashboard: React.FC = () => {
 
   return (
     <div className="container animate-fade-in" style={{ padding: '2rem 1.5rem', flex: 1, display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-      
+
       {/* Cabecera del Dashboard */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
         <div>
-          <h1 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.025em', marginBottom: '0.25rem' }}>
+          <h1 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.04em', marginBottom: '0.25rem', fontFamily: 'var(--font-display)' }}>
             Mis Sorteos y Boletas
           </h1>
           <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
             Administra tus números de la suerte, revisa sus estados y mantén un historial de tus jugadas.
           </p>
         </div>
-        <button 
+        <button
           onClick={handleOpenAdd}
           className="btn btn-primary"
-          style={{ height: '2.75rem', padding: '0 1.25rem' }}
+          style={{ height: '2.75rem', padding: '0 1.25rem', fontFamily: 'var(--font-display)', fontWeight: 600 }}
         >
           <Plus size={18} />
           Registrar Boleta
@@ -240,7 +240,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div>
             <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Total Registradas</div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2' }}>{totalTickets}</div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2', fontFamily: 'var(--font-display)' }}>{totalTickets}</div>
           </div>
         </div>
 
@@ -257,7 +257,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div>
             <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Inversión Total</div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2' }}>{formatCurrency(totalInvestment)}</div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2', fontFamily: 'var(--font-display)' }}>{formatCurrency(totalInvestment)}</div>
           </div>
         </div>
 
@@ -274,7 +274,7 @@ const Dashboard: React.FC = () => {
           </div>
           <div>
             <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Por Jugar / Pendientes</div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2' }}>{pendingTickets}</div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2', fontFamily: 'var(--font-display)' }}>{pendingTickets}</div>
           </div>
         </div>
 
@@ -291,17 +291,17 @@ const Dashboard: React.FC = () => {
           </div>
           <div>
             <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Ganadas</div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2' }}>{wonTickets}</div>
+            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2', fontFamily: 'var(--font-display)' }}>{wonTickets}</div>
           </div>
         </div>
       </div>
 
       {/* Controles de Filtros y Búsqueda */}
-      <div className="card glass" style={{ 
-        display: 'flex', 
-        flexDirection: 'row', 
-        alignItems: 'center', 
-        gap: '1rem', 
+      <div className="card glass" style={{
+        display: 'flex',
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: '1rem',
         flexWrap: 'wrap',
         padding: '1.25rem'
       }}>
@@ -314,8 +314,8 @@ const Dashboard: React.FC = () => {
             transform: 'translateY(-50%)',
             color: 'var(--text-muted)'
           }} />
-          <input 
-            type="text" 
+          <input
+            type="text"
             placeholder="Buscar por título o número de boleta..."
             className="form-input"
             value={searchQuery}
@@ -326,7 +326,7 @@ const Dashboard: React.FC = () => {
 
         {/* Filtro Tipo Juego */}
         <div style={{ flex: '1 1 180px' }}>
-          <select 
+          <select
             className="form-input"
             value={filterGameType}
             onChange={(e) => setFilterGameType(e.target.value)}
@@ -341,7 +341,7 @@ const Dashboard: React.FC = () => {
 
         {/* Filtro Estado */}
         <div style={{ flex: '1 1 180px' }}>
-          <select 
+          <select
             className="form-input"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
@@ -381,10 +381,10 @@ const Dashboard: React.FC = () => {
         </div>
       ) : tickets.length === 0 ? (
         /* Estado Vacío Premium */
-        <div className="card flex-center animate-fade-in" style={{ 
-          flexDirection: 'column', 
-          padding: '4rem 2rem', 
-          textAlign: 'center', 
+        <div className="card flex-center animate-fade-in" style={{
+          flexDirection: 'column',
+          padding: '4rem 2rem',
+          textAlign: 'center',
           gap: '1.25rem',
           borderStyle: 'dashed',
           borderColor: 'var(--text-muted)'
@@ -404,7 +404,7 @@ const Dashboard: React.FC = () => {
               Sin resultados encontrados
             </h3>
             <p style={{ color: 'var(--text-secondary)', maxWidth: '400px', margin: '0 auto', fontSize: '0.95rem' }}>
-              {searchQuery || filterStatus || filterGameType 
+              {searchQuery || filterStatus || filterGameType
                 ? 'Ninguna boleta coincide con los filtros aplicados. Intenta cambiarlos o limpiar la búsqueda.'
                 : 'Aún no tienes boletas registradas en tu cuenta. ¡Crea tu primera boleta para empezar a monitorearla!'}
             </p>
@@ -421,151 +421,153 @@ const Dashboard: React.FC = () => {
           )}
         </div>
       ) : (
-        /* Grid de Tarjetas de Boletas */
+        /* Grid de Talonarios de Boletas */
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-          gap: '1.25rem'
+          gridTemplateColumns: 'repeat(auto-fill, minmax(420px, 1fr))',
+          gap: '1.5rem'
         }}>
           {tickets.map(ticket => (
-            <div 
-              key={ticket.id} 
-              className="card card-hover animate-fade-in"
-              style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1.25rem',
-                position: 'relative'
-              }}
+            <div
+              key={ticket.id}
+              className="ticket-stub animate-fade-in"
             >
-              {/* Encabezado: Título + Badge de Tipo */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.75rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1 }}>
-                  <h3 style={{ 
-                    fontSize: '1.15rem', 
-                    fontWeight: 700, 
+              {/* Parte Izquierda: Información de la boleta */}
+              <div className="ticket-stub-main">
+                <div>
+                  <h3 style={{
+                    fontSize: '1.1rem',
+                    fontWeight: 700,
                     color: 'var(--text-primary)',
                     lineHeight: '1.3',
-                    wordBreak: 'break-word'
+                    wordBreak: 'break-word',
+                    fontFamily: 'var(--font-display)',
+                    marginBottom: '0.35rem'
                   }}>
                     {ticket.title}
                   </h3>
-                  <span className="badge badge-pending" style={{
-                    width: 'fit-content',
-                    fontSize: '0.65rem',
-                    padding: '0.125rem 0.5rem',
+                  <span className="badge" style={{
+                    fontSize: '0.625rem',
+                    padding: '0.15rem 0.5rem',
                     backgroundColor: 'var(--primary-light)',
-                    color: 'var(--primary)'
+                    color: 'var(--primary)',
+                    fontFamily: 'var(--font-display)',
+                    borderRadius: '4px'
                   }}>
                     {ticket.gameType}
                   </span>
                 </div>
 
-                {/* Badge de Estado */}
-                <span className={`badge ${
-                  ticket.status === 'Ganado' ? 'badge-won' : 
-                  ticket.status === 'Perdido' ? 'badge-lost' : 'badge-pending'
-                }`}>
-                  {ticket.status}
-                </span>
-              </div>
-
-              {/* Contenido / Atributos del Ticket */}
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: '1fr 1fr', 
-                gap: '0.75rem 1rem', 
-                fontSize: '0.85rem',
-                color: 'var(--text-secondary)',
-                borderTop: '1px solid var(--border)',
-                borderBottom: '1px solid var(--border)',
-                padding: '0.875rem 0'
-              }}>
-                {/* Número */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Award size={14} style={{ color: 'var(--text-muted)' }} />
-                  <div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>Número</div>
-                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{ticket.gameNumber || 'N/A'}</div>
+                {/* Grid de atributos */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '0.5rem 0.75rem',
+                  fontSize: '0.8rem',
+                  color: 'var(--text-secondary)',
+                  borderTop: '1px dashed var(--border)',
+                  paddingTop: '0.75rem'
+                }}>
+                  {/* Fecha Sorteo */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Calendar size={13} style={{ color: 'var(--text-muted)' }} />
+                    <div>
+                      <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Sorteo</span>
+                      <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{formatDate(ticket.gameDate)}</span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Fecha */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Calendar size={14} style={{ color: 'var(--text-muted)' }} />
-                  <div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>Sorteo</div>
-                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{formatDate(ticket.gameDate)}</div>
+                  {/* Valor invertido */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Coins size={13} style={{ color: 'var(--text-muted)' }} />
+                    <div>
+                      <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Valor</span>
+                      <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>{formatCurrency(ticket.amount || undefined)}</span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Valor */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Coins size={14} style={{ color: 'var(--text-muted)' }} />
-                  <div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>Valor</div>
-                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{formatCurrency(ticket.amount || undefined)}</div>
-                  </div>
-                </div>
-
-                {/* Lugar */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <MapPin size={14} style={{ color: 'var(--text-muted)' }} />
-                  <div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>Lugar / Lotería</div>
-                    <div style={{ fontWeight: 600, color: 'var(--text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '100px' }}>
-                      {ticket.place || 'N/A'}
+                  {/* Lugar */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', gridColumn: 'span 2' }}>
+                    <MapPin size={13} style={{ color: 'var(--text-muted)' }} />
+                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Lugar</span>
+                      <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{ticket.place || 'N/A'}</span>
                     </div>
                   </div>
                 </div>
+
+                {/* Notas de la boleta si existen */}
+                {ticket.notes && (
+                  <div style={{
+                    fontSize: '0.75rem',
+                    color: 'var(--text-secondary)',
+                    backgroundColor: 'var(--bg-card-hover)',
+                    padding: '0.5rem 0.75rem',
+                    borderRadius: 'var(--radius-sm)',
+                    borderLeft: '2px solid var(--primary)',
+                    fontStyle: 'italic',
+                    wordBreak: 'break-word',
+                    maxHeight: '3rem',
+                    overflowY: 'auto',
+                    marginTop: '0.25rem'
+                  }}>
+                    "{ticket.notes}"
+                  </div>
+                )}
               </div>
 
-              {/* Notas del Ticket */}
-              {ticket.notes && (
-                <div style={{ 
-                  fontSize: '0.8rem', 
-                  color: 'var(--text-secondary)', 
-                  backgroundColor: 'var(--bg-card-hover)', 
-                  padding: '0.625rem 0.875rem', 
-                  borderRadius: 'var(--radius-sm)',
-                  borderLeft: '3px solid var(--primary)',
-                  fontStyle: 'italic',
-                  wordBreak: 'break-word',
-                  maxHeight: '4.5rem',
-                  overflowY: 'auto'
-                }}>
-                  "{ticket.notes}"
-                </div>
-              )}
+              {/* Divisor físico con muescas (notch) */}
+              <div className="ticket-stub-divider-container">
+                <div className="ticket-stub-notch ticket-stub-notch-top"></div>
+                <div className="ticket-stub-divider"></div>
+                <div className="ticket-stub-notch ticket-stub-notch-bottom"></div>
+              </div>
 
-              {/* Acciones de Tarjeta */}
-              <div style={{ 
-                display: 'flex', 
-                gap: '0.75rem', 
-                marginTop: 'auto',
-                paddingTop: '0.25rem'
-              }}>
-                <button 
-                  onClick={() => handleOpenEdit(ticket)}
-                  className="btn btn-secondary"
-                  style={{ flex: 1, padding: '0.5rem', fontSize: '0.85rem' }}
-                >
-                  <Edit3 size={14} />
-                  Editar
-                </button>
-                <button 
-                  onClick={() => setDeletingTicket(ticket)}
-                  className="btn btn-secondary"
-                  style={{ 
-                    padding: '0.5rem 0.75rem', 
-                    fontSize: '0.85rem',
-                    color: 'var(--danger)',
-                    borderColor: 'transparent'
-                  }}
-                  title="Eliminar Boleta"
-                >
-                  <Trash2 size={15} />
-                </button>
+              {/* Parte Derecha: Número + Estado Micro-LED + Acciones */}
+              <div className="ticket-stub-right">
+                {/* Número */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', width: '100%' }}>
+                  <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Número Jugado</span>
+                  <div className="ticket-number-display">
+                    {ticket.gameNumber || 'N/A'}
+                  </div>
+                </div>
+
+                {/* Micro-LED de Estado */}
+                <div className="status-dot-container">
+                  <span className={`status-dot ${
+                    ticket.status === 'Ganado' ? 'status-dot-won' :
+                    ticket.status === 'Perdido' ? 'status-dot-lost' : 'status-dot-pending'
+                  }`}></span>
+                  <span>{ticket.status}</span>
+                </div>
+
+                {/* Acciones */}
+                <div style={{ display: 'flex', gap: '0.4rem', width: '100%', justifyContent: 'center' }}>
+                  <button
+                    onClick={() => handleOpenEdit(ticket)}
+                    className="btn btn-secondary"
+                    style={{ flex: 1, padding: '0.35rem 0.5rem', fontSize: '0.75rem', height: '1.85rem' }}
+                    title="Editar boleta"
+                  >
+                    <Edit3 size={12} />
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => setDeletingTicket(ticket)}
+                    className="btn btn-secondary"
+                    style={{
+                      padding: '0.35rem',
+                      height: '1.85rem',
+                      width: '1.85rem',
+                      color: 'var(--danger)',
+                      borderColor: 'transparent'
+                    }}
+                    title="Eliminar boleta"
+                  >
+                    <Trash2 size={12} />
+                  </button>
+                </div>
               </div>
             </div>
           ))}
@@ -590,7 +592,7 @@ const Dashboard: React.FC = () => {
           animation: 'fadeIn 0.2s ease-out'
         }}>
           {/* Fondo clickeable para cerrar */}
-          <div 
+          <div
             onClick={() => !isSubmitting && setIsDrawerOpen(false)}
             style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', zIndex: 99 }}
           ></div>
@@ -621,7 +623,7 @@ const Dashboard: React.FC = () => {
                   {editingTicket ? 'Modifica los campos que desees actualizar.' : 'Completa los campos para hacer seguimiento a tu sorteo.'}
                 </p>
               </div>
-              <button 
+              <button
                 onClick={() => setIsDrawerOpen(false)}
                 disabled={isSubmitting}
                 className="btn btn-secondary"
@@ -633,12 +635,12 @@ const Dashboard: React.FC = () => {
 
             {/* Formulario */}
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
-              
+
               {/* Título (Obligatorio) */}
               <div className="form-group">
                 <label className="form-label">Título de la Boleta / Sorteo *</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   className={`form-input ${formErrors.title ? 'error' : ''}`}
                   placeholder="Ej: Lotería de Medellín, Rifa del carro..."
                   value={title}
@@ -654,7 +656,7 @@ const Dashboard: React.FC = () => {
                 {/* Tipo de Juego */}
                 <div className="form-group">
                   <label className="form-label">Tipo de Juego *</label>
-                  <select 
+                  <select
                     className="form-input"
                     value={gameType}
                     onChange={(e) => setGameType(e.target.value as GameType)}
@@ -669,8 +671,8 @@ const Dashboard: React.FC = () => {
                 {/* Número de Boleta */}
                 <div className="form-group">
                   <label className="form-label">Número Jugado</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     className={`form-input ${formErrors.gameNumber ? 'error' : ''}`}
                     placeholder="Ej: 4567, 12"
                     value={gameNumber}
@@ -686,8 +688,8 @@ const Dashboard: React.FC = () => {
                 {/* Fecha */}
                 <div className="form-group">
                   <label className="form-label">Fecha del Sorteo *</label>
-                  <input 
-                    type="date" 
+                  <input
+                    type="date"
                     className={`form-input ${formErrors.gameDate ? 'error' : ''}`}
                     value={gameDate}
                     onChange={(e) => setGameDate(e.target.value)}
@@ -700,8 +702,8 @@ const Dashboard: React.FC = () => {
                 {/* Valor */}
                 <div className="form-group">
                   <label className="form-label">Monto Invertido ($)</label>
-                  <input 
-                    type="number" 
+                  <input
+                    type="number"
                     min="0"
                     className={`form-input ${formErrors.amount ? 'error' : ''}`}
                     placeholder="Ej: 10000"
@@ -718,8 +720,8 @@ const Dashboard: React.FC = () => {
                 {/* Lugar / Entidad */}
                 <div className="form-group">
                   <label className="form-label">Lugar / Lotería</label>
-                  <input 
-                    type="text" 
+                  <input
+                    type="text"
                     className={`form-input ${formErrors.place ? 'error' : ''}`}
                     placeholder="Ej: Paga Todo, Éxito..."
                     value={place}
@@ -732,7 +734,7 @@ const Dashboard: React.FC = () => {
                 {/* Estado */}
                 <div className="form-group">
                   <label className="form-label">Estado de la Boleta *</label>
-                  <select 
+                  <select
                     className="form-input"
                     value={status}
                     onChange={(e) => setStatus(e.target.value as TicketStatus)}
@@ -748,7 +750,7 @@ const Dashboard: React.FC = () => {
               {/* Notas */}
               <div className="form-group">
                 <label className="form-label">Notas Adicionales / Serie</label>
-                <textarea 
+                <textarea
                   className={`form-input ${formErrors.notes ? 'error' : ''}`}
                   placeholder="Ej: Serie 012, comprado con amigos de la universidad..."
                   value={notes}
@@ -761,8 +763,8 @@ const Dashboard: React.FC = () => {
 
               {/* Acciones del Formulario */}
               <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setIsDrawerOpen(false)}
                   disabled={isSubmitting}
                   className="btn btn-secondary"
@@ -770,8 +772,8 @@ const Dashboard: React.FC = () => {
                 >
                   Cancelar
                 </button>
-                <button 
-                  type="submit" 
+                <button
+                  type="submit"
                   disabled={isSubmitting}
                   className="btn btn-primary"
                   style={{ flex: 1.5 }}
@@ -843,7 +845,7 @@ const Dashboard: React.FC = () => {
 
             {/* Acciones */}
             <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', borderTop: '1px solid var(--border)', paddingTop: '1.25rem' }}>
-              <button 
+              <button
                 onClick={() => setDeletingTicket(null)}
                 disabled={isDeleting}
                 className="btn btn-secondary"
@@ -851,7 +853,7 @@ const Dashboard: React.FC = () => {
               >
                 Cancelar
               </button>
-              <button 
+              <button
                 onClick={handleDeleteConfirm}
                 disabled={isDeleting}
                 className="btn btn-danger"

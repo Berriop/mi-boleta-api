@@ -89,7 +89,8 @@ export const updateTicket = async (req: Request, res: Response, next: NextFuncti
   try {
     const userId = req.userId!;
     const dto = req.body as UpdateTicketDto;
-    const updated = await updateTicketUseCase.execute(req.params.id, userId, dto);
+    const isAdmin = req.userRole === 'admin';
+    const updated = await updateTicketUseCase.execute(req.params.id, userId, dto, isAdmin);
     res.status(200).json({ data: updated });
   } catch (error) {
     next(error);

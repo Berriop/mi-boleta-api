@@ -1,13 +1,13 @@
 import React, { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../core/store/authContext';
-import { 
-  Sun, 
-  Moon, 
-  LogOut, 
-  User as UserIcon, 
-  LayoutDashboard, 
-  ShieldAlert, 
+import {
+  Sun,
+  Moon,
+  LogOut,
+  User as UserIcon,
+  LayoutDashboard,
+  ShieldAlert,
   Sparkles,
   Menu,
   X
@@ -17,7 +17,7 @@ export const Navbar: React.FC = () => {
   const { user, logout } = useAuth();
   const location = useLocation();
   const navigate = useNavigate();
-  
+
   // Estado del tema
   const [theme, setTheme] = useState<'light' | 'dark'>(() => {
     return (localStorage.getItem('mi_boleta_theme') as 'light' | 'dark') || 'dark';
@@ -65,8 +65,9 @@ export const Navbar: React.FC = () => {
           color: 'var(--text-primary)',
           fontSize: '1.25rem',
           fontWeight: 700,
-          letterSpacing: '-0.025em',
-          textDecoration: 'none'
+          letterSpacing: '-0.04em',
+          textDecoration: 'none',
+          fontFamily: 'var(--font-display)'
         }}>
           <div className="flex-center" style={{
             width: '2.5rem',
@@ -74,14 +75,15 @@ export const Navbar: React.FC = () => {
             borderRadius: 'var(--radius-md)',
             background: 'linear-gradient(135deg, var(--primary) 0%, var(--primary-hover) 100%)',
             color: '#ffffff',
-            boxShadow: '0 4px 10px rgba(99, 102, 241, 0.3)'
+            boxShadow: '0 4px 10px rgba(139, 92, 246, 0.3)'
           }}>
             <Sparkles size={18} />
           </div>
-          <span style={{ 
+          <span style={{
             background: 'linear-gradient(to right, var(--text-primary), var(--text-secondary))',
             WebkitBackgroundClip: 'text',
-            WebkitTextFillColor: 'transparent'
+            WebkitTextFillColor: 'transparent',
+            fontWeight: 700
           }}>
             ¿Y si sí me lo gané?
           </span>
@@ -99,8 +101,8 @@ export const Navbar: React.FC = () => {
             alignItems: 'center',
             gap: '0.5rem'
           }}>
-            <Link 
-              to="/dashboard" 
+            <Link
+              to="/dashboard"
               className="btn"
               style={{
                 backgroundColor: isActive('/dashboard') ? 'var(--primary-light)' : 'transparent',
@@ -108,6 +110,7 @@ export const Navbar: React.FC = () => {
                 padding: '0.5rem 1rem',
                 fontSize: '0.9rem',
                 border: 'none',
+                fontFamily: 'var(--font-display)',
                 fontWeight: isActive('/dashboard') ? 600 : 500
               }}
             >
@@ -116,8 +119,8 @@ export const Navbar: React.FC = () => {
             </Link>
 
             {user?.role === 'admin' && (
-              <Link 
-                to="/admin" 
+              <Link
+                to="/admin"
                 className="btn"
                 style={{
                   backgroundColor: isActive('/admin') ? 'var(--danger-light)' : 'transparent',
@@ -125,6 +128,7 @@ export const Navbar: React.FC = () => {
                   padding: '0.5rem 1rem',
                   fontSize: '0.9rem',
                   border: 'none',
+                  fontFamily: 'var(--font-display)',
                   fontWeight: isActive('/admin') ? 600 : 500
                 }}
               >
@@ -144,7 +148,7 @@ export const Navbar: React.FC = () => {
             gap: '1rem'
           }}>
             {/* Toggle de Tema */}
-            <button 
+            <button
               onClick={toggleTheme}
               className="btn btn-secondary"
               title={theme === 'dark' ? 'Cambiar a modo claro' : 'Cambiar a modo oscuro'}
@@ -180,9 +184,9 @@ export const Navbar: React.FC = () => {
                 {user?.name ? user.name.charAt(0).toUpperCase() : <UserIcon size={12} />}
               </div>
               <div style={{ display: 'flex', flexDirection: 'column' }}>
-                <span style={{ 
-                  fontSize: '0.85rem', 
-                  fontWeight: 600, 
+                <span style={{
+                  fontSize: '0.85rem',
+                  fontWeight: 600,
                   color: 'var(--text-primary)',
                   maxWidth: '120px',
                   overflow: 'hidden',
@@ -206,7 +210,7 @@ export const Navbar: React.FC = () => {
             </div>
 
             {/* Botón Logout */}
-            <button 
+            <button
               onClick={handleLogout}
               className="btn btn-secondary"
               title="Cerrar Sesión"
@@ -231,7 +235,7 @@ export const Navbar: React.FC = () => {
           gap: '0.5rem'
         }} className="mobile-controls">
           {/* Toggle de Tema Móvil */}
-          <button 
+          <button
             onClick={toggleTheme}
             className="btn btn-secondary"
             style={{
@@ -246,7 +250,7 @@ export const Navbar: React.FC = () => {
           </button>
 
           {/* Hamburguesa Menú */}
-          <button 
+          <button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
             className="btn btn-secondary"
             style={{
@@ -328,8 +332,8 @@ export const Navbar: React.FC = () => {
 
           {/* Links Navegación Móvil */}
           <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-            <Link 
-              to="/dashboard" 
+            <Link
+              to="/dashboard"
               onClick={() => setIsMobileMenuOpen(false)}
               className="btn"
               style={{
@@ -345,8 +349,8 @@ export const Navbar: React.FC = () => {
             </Link>
 
             {user?.role === 'admin' && (
-              <Link 
-                to="/admin" 
+              <Link
+                to="/admin"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="btn"
                 style={{
@@ -364,7 +368,7 @@ export const Navbar: React.FC = () => {
           </div>
 
           {/* Botón de Logout Móvil */}
-          <button 
+          <button
             onClick={() => {
               setIsMobileMenuOpen(false);
               handleLogout();

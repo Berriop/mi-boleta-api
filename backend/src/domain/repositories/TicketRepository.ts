@@ -38,7 +38,8 @@ export interface TicketRepository {
   update(
     ticketId: string,
     userId: string,
-    updates: Partial<Omit<Ticket, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>
+    updates: Partial<Omit<Ticket, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>,
+    isAdmin?: boolean
   ): Promise<Ticket | null>;
   delete(ticketId: string, userId: string): Promise<boolean>;
 }

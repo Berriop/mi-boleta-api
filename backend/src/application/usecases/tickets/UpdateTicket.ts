@@ -9,8 +9,13 @@ export type UpdateTicketInput = Partial<
 export class UpdateTicket {
   constructor(private ticketRepository: TicketRepository) {}
 
-  async execute(ticketId: string, userId: string, updates: UpdateTicketInput): Promise<Ticket> {
-    const ticket = await this.ticketRepository.update(ticketId, userId, updates);
+  async execute(
+    ticketId: string,
+    userId: string,
+    updates: UpdateTicketInput,
+    isAdmin?: boolean
+  ): Promise<Ticket> {
+    const ticket = await this.ticketRepository.update(ticketId, userId, updates, isAdmin);
     if (!ticket) {
       throw new DomainError('Ticket no encontrado', 404);
     }

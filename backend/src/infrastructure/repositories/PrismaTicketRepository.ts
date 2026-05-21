@@ -127,10 +127,15 @@ export class PrismaTicketRepository implements TicketRepository {
   async update(
     ticketId: string,
     userId: string,
-    updates: Partial<Omit<Ticket, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>
+    updates: Partial<Omit<Ticket, 'id' | 'userId' | 'createdAt' | 'updatedAt'>>,
+    isAdmin?: boolean
   ): Promise<Ticket | null> {
+    const whereClause: Prisma.TicketWhereInput = isAdmin
+      ? { id: ticketId }
+      : { id: ticketId, userId };
+
     const existing = await client.ticket.findFirst({
-      where: { id: ticketId, userId },
+      where: whereClause,
       select: { id: true },
     });
     if (!existing) return null;

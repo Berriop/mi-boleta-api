@@ -3,7 +3,6 @@ import { apiClient } from '../../core/api/apiClient';
 import type { Ticket, ApiResponse, GameType, TicketStatus, ApiMeta } from '../../core/types';
 import { 
   Search, 
-  Trash2, 
   TrendingUp, 
   Coins, 
   Calendar, 
@@ -16,7 +15,9 @@ import {
   ChevronLeft,
   ChevronRight,
   User as UserIcon,
-  Mail
+  Check,
+  X,
+  RotateCcw
 } from 'lucide-react';
 
 const GAME_TYPES: GameType[] = ['Lotería', 'Rifa', 'Sorteo', 'Boleta', 'Juego ocasional'];
@@ -36,9 +37,7 @@ const AdminPanel: React.FC = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
 
-  // Modal de confirmación para eliminar
-  const [deletingTicket, setDeletingTicket] = useState<Ticket | null>(null);
-  const [isDeleting, setIsDeleting] = useState(false);
+  const [updatingTicketId, setUpdatingTicketId] = useState<string | null>(null);
 
   // Cargar boletas de administración
   const fetchAdminTickets = async () => {
@@ -74,20 +73,18 @@ const AdminPanel: React.FC = () => {
     fetchAdminTickets();
   }, [page, pageSize, searchQuery, filterStatus, filterGameType]);
 
-  // Confirmar eliminación (como administrador)
-  const handleDeleteConfirm = async () => {
-    if (!deletingTicket) return;
-    setIsDeleting(true);
+
+
+  // Actualizar estado de la boleta (como administrador)
+  const handleUpdateStatus = async (ticketId: string, newStatus: TicketStatus) => {
+    setUpdatingTicketId(ticketId);
     try {
-      // Nota: El endpoint DELETE /tickets/:id valida pertenencia a menos que esté adaptado
-      // Pero eliminamos llamando al endpoint general del backend
-      await apiClient.delete(`/tickets/${deletingTicket.id}`);
-      setDeletingTicket(null);
+      await apiClient.put(`/tickets/${ticketId}`, { status: newStatus });
       fetchAdminTickets();
     } catch (error: any) {
-      alert(error.message || 'Error al eliminar la boleta');
+      alert(error.message || 'Error al actualizar el estado de la boleta');
     } finally {
-      setIsDeleting(false);
+      setUpdatingTicketId(null);
     }
   };
 
@@ -117,10 +114,10 @@ const AdminPanel: React.FC = () => {
       
       {/* Cabecera del Panel */}
       <div>
-        <h1 style={{ fontSize: '2rem', fontWeight: 800, letterSpacing: '-0.025em', marginBottom: '0.25rem' }}>
+        <h1 style={{ fontSize: '1.75rem', fontWeight: 800, letterSpacing: '-0.04em', marginBottom: '0.25rem', fontFamily: 'var(--font-display)' }}>
           Panel de Administración Global
         </h1>
-        <p style={{ color: 'var(--text-secondary)', fontSize: '0.95rem' }}>
+        <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
           Monitorea, filtra y gestiona todas las boletas y sorteos de todos los usuarios registrados en el sistema.
         </p>
       </div>
@@ -132,70 +129,94 @@ const AdminPanel: React.FC = () => {
         gap: '1.25rem'
       }}>
         {/* KPI: Total Boletas Globales */}
-        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div className="card card-hover" style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '1.25rem',
+          borderLeft: '3px solid var(--primary)'
+        }}>
           <div className="flex-center" style={{
-            width: '3.25rem',
-            height: '3.25rem',
-            borderRadius: 'var(--radius-md)',
+            width: '2.75rem',
+            height: '2.75rem',
+            borderRadius: 'var(--radius-sm)',
             backgroundColor: 'var(--primary-light)',
-            color: 'var(--primary)'
+            color: 'var(--primary)',
+            boxShadow: '0 0 8px var(--primary-light)'
           }}>
-            <TrendingUp size={24} />
+            <TrendingUp size={18} />
           </div>
           <div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Boletas Totales (Sistema)</div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2' }}>{totalItems}</div>
+            <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Boletas Totales (Sistema)</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2', marginTop: '2px', fontFamily: 'var(--font-display)' }}>{totalItems}</div>
           </div>
         </div>
 
         {/* KPI: Monto Global Jugado */}
-        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div className="card card-hover" style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '1.25rem',
+          borderLeft: '3px solid var(--success)'
+        }}>
           <div className="flex-center" style={{
-            width: '3.25rem',
-            height: '3.25rem',
-            borderRadius: 'var(--radius-md)',
+            width: '2.75rem',
+            height: '2.75rem',
+            borderRadius: 'var(--radius-sm)',
             backgroundColor: 'var(--success-light)',
-            color: 'var(--success)'
+            color: 'var(--success)',
+            boxShadow: '0 0 8px var(--success-light)'
           }}>
-            <Coins size={24} />
+            <Coins size={18} />
           </div>
           <div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Inversión (Esta Página)</div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2' }}>{formatCurrency(totalInvestment)}</div>
+            <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Inversión (Esta Página)</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2', marginTop: '2px', fontFamily: 'var(--font-display)' }}>{formatCurrency(totalInvestment)}</div>
           </div>
         </div>
 
         {/* KPI: Pendientes Globales */}
-        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div className="card card-hover" style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '1.25rem',
+          borderLeft: '3px solid var(--warning)'
+        }}>
           <div className="flex-center" style={{
-            width: '3.25rem',
-            height: '3.25rem',
-            borderRadius: 'var(--radius-md)',
-            backgroundColor: 'var(--pending-light)',
-            color: 'var(--pending-text)'
+            width: '2.75rem',
+            height: '2.75rem',
+            borderRadius: 'var(--radius-sm)',
+            backgroundColor: 'var(--warning-light)',
+            color: 'var(--warning)',
+            boxShadow: '0 0 8px var(--warning-light)'
           }}>
-            <Clock size={24} />
+            <Clock size={18} />
           </div>
           <div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Pendientes (Esta Página)</div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2' }}>{pendingCount}</div>
+            <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pendientes (Esta Página)</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2', marginTop: '2px', fontFamily: 'var(--font-display)' }}>{pendingCount}</div>
           </div>
         </div>
 
         {/* KPI: Ganados Globales */}
-        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+        <div className="card card-hover" style={{ 
+          display: 'flex', 
+          alignItems: 'center', 
+          gap: '1.25rem',
+          borderLeft: '3px solid var(--success)'
+        }}>
           <div className="flex-center" style={{
-            width: '3.25rem',
-            height: '3.25rem',
-            borderRadius: 'var(--radius-md)',
+            width: '2.75rem',
+            height: '2.75rem',
+            borderRadius: 'var(--radius-sm)',
             backgroundColor: 'var(--won-light)',
-            color: 'var(--won-text)'
+            color: 'var(--won-text)',
+            boxShadow: '0 0 8px var(--won-light)'
           }}>
-            <Award size={24} />
+            <Award size={18} />
           </div>
           <div>
-            <div style={{ fontSize: '0.85rem', fontWeight: 500, color: 'var(--text-secondary)' }}>Ganadas (Esta Página)</div>
-            <div style={{ fontSize: '1.75rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2' }}>{wonCount}</div>
+            <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Ganadas (Esta Página)</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2', marginTop: '2px', fontFamily: 'var(--font-display)' }}>{wonCount}</div>
           </div>
         </div>
       </div>
@@ -207,11 +228,11 @@ const AdminPanel: React.FC = () => {
         alignItems: 'center', 
         gap: '1rem', 
         flexWrap: 'wrap',
-        padding: '1.25rem'
+        padding: '1rem'
       }}>
         {/* Input de Búsqueda */}
         <div style={{ flex: '1 1 300px', position: 'relative' }}>
-          <Search size={18} style={{
+          <Search size={16} style={{
             position: 'absolute',
             left: '1rem',
             top: '50%',
@@ -224,7 +245,7 @@ const AdminPanel: React.FC = () => {
             className="form-input"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ paddingLeft: '2.75rem', height: '2.75rem' }}
+            style={{ paddingLeft: '2.5rem', height: '2.5rem' }}
           />
         </div>
 
@@ -234,7 +255,7 @@ const AdminPanel: React.FC = () => {
             className="form-input"
             value={filterGameType}
             onChange={(e) => setFilterGameType(e.target.value)}
-            style={{ height: '2.75rem', cursor: 'pointer' }}
+            style={{ height: '2.5rem', cursor: 'pointer' }}
           >
             <option value="">Todos los Tipos</option>
             {GAME_TYPES.map(t => (
@@ -249,7 +270,7 @@ const AdminPanel: React.FC = () => {
             className="form-input"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            style={{ height: '2.75rem', cursor: 'pointer' }}
+            style={{ height: '2.5rem', cursor: 'pointer' }}
           >
             <option value="">Todos los Estados</option>
             {TICKET_STATUSES.map(s => (
@@ -260,12 +281,12 @@ const AdminPanel: React.FC = () => {
 
         {/* Selector de Tamaño de Página */}
         <div style={{ flex: '0 0 120px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)', fontWeight: 500 }}>Filas:</span>
+          <span style={{ fontSize: '0.775rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Filas:</span>
           <select 
             className="form-input"
             value={pageSize}
             onChange={(e) => setPageSize(Number(e.target.value))}
-            style={{ height: '2.75rem', cursor: 'pointer', padding: '0 0.5rem' }}
+            style={{ height: '2.5rem', cursor: 'pointer', padding: '0 0.5rem' }}
           >
             <option value={5}>5</option>
             <option value={10}>10</option>
@@ -308,23 +329,23 @@ const AdminPanel: React.FC = () => {
           textAlign: 'center', 
           gap: '1.25rem',
           borderStyle: 'dashed',
-          borderColor: 'var(--text-muted)'
+          borderColor: 'var(--border)'
         }}>
           <div className="flex-center" style={{
-            width: '5rem',
-            height: '5rem',
-            borderRadius: '50%',
+            width: '4rem',
+            height: '4rem',
+            borderRadius: 'var(--radius-sm)',
             backgroundColor: 'var(--danger-light)',
             color: 'var(--danger)',
             marginBottom: '0.5rem'
           }}>
-            <FileText size={40} />
+            <FileText size={32} />
           </div>
           <div>
-            <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>
+            <h3 style={{ fontSize: '1.15rem', fontWeight: 700, marginBottom: '0.5rem' }}>
               Sin resultados encontrados en el sistema
             </h3>
-            <p style={{ color: 'var(--text-secondary)', maxWidth: '400px', margin: '0 auto', fontSize: '0.95rem' }}>
+            <p style={{ color: 'var(--text-secondary)', maxWidth: '400px', margin: '0 auto', fontSize: '0.875rem' }}>
               No se han encontrado boletas registradas de ningún usuario bajo los filtros actuales.
             </p>
           </div>
@@ -335,155 +356,254 @@ const AdminPanel: React.FC = () => {
           )}
         </div>
       ) : (
-        /* Grid de Tarjetas de Boletas Globales con Detalles del Dueño */
+        /* Grid de Talonarios de Boletas Globales */
         <div style={{
           display: 'grid',
-          gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))',
-          gap: '1.25rem'
+          gridTemplateColumns: 'repeat(auto-fill, minmax(420px, 1fr))',
+          gap: '1.5rem'
         }}>
           {tickets.map(ticket => (
             <div 
               key={ticket.id} 
-              className="card card-hover animate-fade-in"
+              className="ticket-stub animate-fade-in"
               style={{
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '1.25rem',
-                position: 'relative',
-                borderLeft: '4px solid var(--danger)' // Color rojo distintivo para boletas en panel admin
+                borderLeft: '3px solid var(--danger)' // Color rojo distintivo para administración
               }}
             >
-              {/* Información del Propietario (Diferenciador del Admin) */}
-              {ticket.owner && (
-                <div style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: '0.5rem',
-                  backgroundColor: 'var(--bg-card-hover)',
-                  padding: '0.5rem 0.75rem',
-                  borderRadius: 'var(--radius-sm)',
-                  border: '1px solid var(--border)',
-                  fontSize: '0.8rem'
-                }}>
-                  <UserIcon size={14} style={{ color: 'var(--danger-text)' }} />
-                  <div style={{ display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
-                    <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
-                      Dueño: {ticket.owner.name}
-                    </span>
-                    <span style={{ 
-                      fontSize: '0.725rem', 
-                      color: 'var(--text-secondary)',
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '0.25rem',
-                      overflow: 'hidden',
-                      textOverflow: 'ellipsis',
-                      whiteSpace: 'nowrap'
-                    }}>
-                      <Mail size={10} />
-                      {ticket.owner.email}
-                    </span>
+              {/* Parte Izquierda: Información de la boleta + Dueño */}
+              <div className="ticket-stub-main">
+                {/* Dueño de la boleta */}
+                {ticket.owner && (
+                  <div style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.5rem',
+                    backgroundColor: 'rgba(244, 63, 94, 0.05)',
+                    padding: '0.4rem 0.6rem',
+                    borderRadius: 'var(--radius-sm)',
+                    border: '1px solid rgba(244, 63, 94, 0.15)',
+                    fontSize: '0.75rem',
+                    marginBottom: '0.25rem'
+                  }}>
+                    <UserIcon size={12} style={{ color: 'var(--danger-text)' }} />
+                    <div style={{ display: 'flex', gap: '0.35rem', overflow: 'hidden' }}>
+                      <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>
+                        {ticket.owner.name}
+                      </span>
+                      <span style={{ color: 'var(--text-muted)' }}>|</span>
+                      <span style={{ color: 'var(--text-muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                        {ticket.owner.email}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
-              {/* Título + Badge de Tipo */}
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '0.75rem' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', flex: 1 }}>
-                  <h3 style={{ 
-                    fontSize: '1.15rem', 
-                    fontWeight: 700, 
+                <div>
+                  <h3 style={{
+                    fontSize: '1.1rem',
+                    fontWeight: 700,
                     color: 'var(--text-primary)',
                     lineHeight: '1.3',
-                    wordBreak: 'break-word'
+                    wordBreak: 'break-word',
+                    fontFamily: 'var(--font-display)',
+                    marginBottom: '0.35rem'
                   }}>
                     {ticket.title}
                   </h3>
-                  <span className="badge badge-pending" style={{
-                    width: 'fit-content',
-                    fontSize: '0.65rem',
-                    padding: '0.125rem 0.5rem',
-                    backgroundColor: 'var(--primary-light)',
-                    color: 'var(--primary)'
+                  <span className="badge" style={{
+                    fontSize: '0.625rem',
+                    padding: '0.15rem 0.5rem',
+                    borderColor: 'var(--border)',
+                    color: 'var(--text-secondary)',
+                    backgroundColor: 'transparent',
+                    fontFamily: 'var(--font-display)',
+                    borderRadius: '4px'
                   }}>
                     {ticket.gameType}
                   </span>
                 </div>
 
-                {/* Badge de Estado */}
-                <span className={`badge ${
-                  ticket.status === 'Ganado' ? 'badge-won' : 
-                  ticket.status === 'Perdido' ? 'badge-lost' : 'badge-pending'
-                }`}>
-                  {ticket.status}
-                </span>
-              </div>
-
-              {/* Contenido / Atributos del Ticket */}
-              <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: '1fr 1fr', 
-                gap: '0.75rem 1rem', 
-                fontSize: '0.85rem',
-                color: 'var(--text-secondary)',
-                borderTop: '1px solid var(--border)',
-                borderBottom: '1px solid var(--border)',
-                padding: '0.875rem 0'
-              }}>
-                {/* Número */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Award size={14} style={{ color: 'var(--text-muted)' }} />
-                  <div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>Número</div>
-                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{ticket.gameNumber || 'N/A'}</div>
+                {/* Grid de atributos */}
+                <div style={{
+                  display: 'grid',
+                  gridTemplateColumns: '1fr 1fr',
+                  gap: '0.5rem 0.75rem',
+                  fontSize: '0.8rem',
+                  color: 'var(--text-secondary)',
+                  borderTop: '1px dashed var(--border)',
+                  paddingTop: '0.75rem'
+                }}>
+                  {/* Fecha Sorteo */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Calendar size={13} style={{ color: 'var(--text-muted)' }} />
+                    <div>
+                      <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Sorteo</span>
+                      <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{formatDate(ticket.gameDate)}</span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Fecha */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Calendar size={14} style={{ color: 'var(--text-muted)' }} />
-                  <div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>Sorteo</div>
-                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{formatDate(ticket.gameDate)}</div>
+                  {/* Valor invertido */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem' }}>
+                    <Coins size={13} style={{ color: 'var(--text-muted)' }} />
+                    <div>
+                      <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Valor</span>
+                      <span style={{ fontWeight: 600, color: 'var(--text-primary)', fontFamily: 'var(--font-display)' }}>{formatCurrency(ticket.amount || undefined)}</span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Valor */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <Coins size={14} style={{ color: 'var(--text-muted)' }} />
-                  <div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>Valor</div>
-                    <div style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{formatCurrency(ticket.amount || undefined)}</div>
-                  </div>
-                </div>
-
-                {/* Lugar */}
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <MapPin size={14} style={{ color: 'var(--text-muted)' }} />
-                  <div>
-                    <div style={{ fontSize: '0.7rem', color: 'var(--text-muted)', fontWeight: 500 }}>Lugar / Lotería</div>
-                    <div style={{ fontWeight: 600, color: 'var(--text-primary)', textOverflow: 'ellipsis', overflow: 'hidden', whiteSpace: 'nowrap', maxWidth: '100px' }}>
-                      {ticket.place || 'N/A'}
+                  {/* Lugar */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.35rem', gridColumn: 'span 2' }}>
+                    <MapPin size={13} style={{ color: 'var(--text-muted)' }} />
+                    <div style={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                      <span style={{ fontSize: '0.65rem', color: 'var(--text-muted)', display: 'block', textTransform: 'uppercase', letterSpacing: '0.02em' }}>Lugar</span>
+                      <span style={{ fontWeight: 600, color: 'var(--text-primary)' }}>{ticket.place || 'N/A'}</span>
                     </div>
                   </div>
                 </div>
               </div>
 
-              {/* Botón de Acciones (Administración para Moderación) */}
-              <div style={{ display: 'flex', gap: '0.75rem', marginTop: 'auto', paddingTop: '0.25rem' }}>
-                <button 
-                  onClick={() => setDeletingTicket(ticket)}
-                  className="btn btn-secondary"
-                  style={{ 
-                    width: '100%', 
-                    justifyContent: 'center', 
-                    color: 'var(--danger)',
-                    borderColor: 'var(--border)'
-                  }}
-                >
-                  <Trash2 size={15} />
-                  Eliminar Boleta (Moderación)
-                </button>
+              {/* Divisor físico con muescas (notch) */}
+              <div className="ticket-stub-divider-container">
+                <div className="ticket-stub-notch ticket-stub-notch-top"></div>
+                <div className="ticket-stub-divider"></div>
+                <div className="ticket-stub-notch ticket-stub-notch-bottom"></div>
+              </div>
+
+              {/* Parte Derecha: Número + Estado Micro-LED + Acciones */}
+              <div className="ticket-stub-right">
+                {/* Número */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.25rem', width: '100%' }}>
+                  <span style={{ fontSize: '0.6rem', color: 'var(--text-muted)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Número Jugado</span>
+                  <div className="ticket-number-display">
+                    {ticket.gameNumber || 'N/A'}
+                  </div>
+                </div>
+
+                {/* Micro-LED de Estado */}
+                <div className="status-dot-container">
+                  <span className={`status-dot ${
+                    ticket.status === 'Ganado' ? 'status-dot-won' :
+                    ticket.status === 'Perdido' ? 'status-dot-lost' : 'status-dot-pending'
+                  }`}></span>
+                  <span>{ticket.status}</span>
+                </div>
+
+                {/* Acciones de Moderación de Estado */}
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.4rem', width: '100%' }}>
+                  {updatingTicketId === ticket.id ? (
+                    <div className="flex-center" style={{ gap: '0.35rem', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
+                      <Loader2 className="animate-spin" size={12} />
+                      <span>Actualizando...</span>
+                    </div>
+                  ) : (
+                    <div style={{ display: 'flex', gap: '0.35rem', width: '100%' }}>
+                      {ticket.status === 'Pendiente' && (
+                        <>
+                          <button
+                            onClick={() => handleUpdateStatus(ticket.id, 'Ganado')}
+                            className="btn"
+                            style={{
+                              flex: 1,
+                              fontSize: '0.7rem',
+                              height: '1.85rem',
+                              padding: '0 0.25rem',
+                              backgroundColor: 'var(--success-light)',
+                              color: 'var(--success-text)',
+                              border: '1px solid rgba(16, 185, 129, 0.2)'
+                            }}
+                          >
+                            <Check size={11} />
+                            Ganó
+                          </button>
+                          <button
+                            onClick={() => handleUpdateStatus(ticket.id, 'Perdido')}
+                            className="btn"
+                            style={{
+                              flex: 1,
+                              fontSize: '0.7rem',
+                              height: '1.85rem',
+                              padding: '0 0.25rem',
+                              backgroundColor: 'var(--danger-light)',
+                              color: 'var(--danger-text)',
+                              border: '1px solid rgba(244, 63, 94, 0.2)'
+                            }}
+                          >
+                            <X size={11} />
+                            Perdió
+                          </button>
+                        </>
+                      )}
+                      {ticket.status === 'Ganado' && (
+                        <>
+                          <button
+                            onClick={() => handleUpdateStatus(ticket.id, 'Perdido')}
+                            className="btn"
+                            style={{
+                              flex: 1,
+                              fontSize: '0.7rem',
+                              height: '1.85rem',
+                              padding: '0 0.25rem',
+                              backgroundColor: 'var(--danger-light)',
+                              color: 'var(--danger-text)',
+                              border: '1px solid rgba(244, 63, 94, 0.2)'
+                            }}
+                          >
+                            <X size={11} />
+                            Perdió
+                          </button>
+                          <button
+                            onClick={() => handleUpdateStatus(ticket.id, 'Pendiente')}
+                            className="btn btn-secondary"
+                            style={{
+                              flex: 1.2,
+                              fontSize: '0.7rem',
+                              height: '1.85rem',
+                              padding: '0 0.25rem',
+                              borderColor: 'var(--border)'
+                            }}
+                          >
+                            <RotateCcw size={11} />
+                            Pendiente
+                          </button>
+                        </>
+                      )}
+                      {ticket.status === 'Perdido' && (
+                        <>
+                          <button
+                            onClick={() => handleUpdateStatus(ticket.id, 'Ganado')}
+                            className="btn"
+                            style={{
+                              flex: 1,
+                              fontSize: '0.7rem',
+                              height: '1.85rem',
+                              padding: '0 0.25rem',
+                              backgroundColor: 'var(--success-light)',
+                              color: 'var(--success-text)',
+                              border: '1px solid rgba(16, 185, 129, 0.2)'
+                            }}
+                          >
+                            <Check size={11} />
+                            Ganó
+                          </button>
+                          <button
+                            onClick={() => handleUpdateStatus(ticket.id, 'Pendiente')}
+                            className="btn btn-secondary"
+                            style={{
+                              flex: 1.2,
+                              fontSize: '0.7rem',
+                              height: '1.85rem',
+                              padding: '0 0.25rem',
+                              borderColor: 'var(--border)'
+                            }}
+                          >
+                            <RotateCcw size={11} />
+                            Pendiente
+                          </button>
+                        </>
+                      )}
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           ))}
@@ -496,12 +616,12 @@ const AdminPanel: React.FC = () => {
       {meta && meta.totalPages > 1 && (
         <div className="card glass flex-center" style={{ 
           justifyContent: 'space-between', 
-          padding: '1rem 1.5rem',
+          padding: '0.75rem 1.5rem',
           flexWrap: 'wrap',
           gap: '1rem',
           marginTop: '1rem'
         }}>
-          <span style={{ fontSize: '0.875rem', color: 'var(--text-secondary)' }}>
+          <span style={{ fontSize: '0.8rem', color: 'var(--text-secondary)' }}>
             Mostrando <strong>{tickets.length}</strong> de <strong>{totalItems}</strong> boletas
           </span>
 
@@ -511,13 +631,13 @@ const AdminPanel: React.FC = () => {
               onClick={() => setPage(p => Math.max(1, p - 1))}
               disabled={page === 1}
               className="btn btn-secondary"
-              style={{ padding: '0.5rem', width: '2.25rem', height: '2.25rem', borderRadius: 'var(--radius-md)' }}
+              style={{ padding: 0, width: '2rem', height: '2rem', borderRadius: 'var(--radius-sm)' }}
             >
-              <ChevronLeft size={16} />
+              <ChevronLeft size={14} />
             </button>
 
             {/* Indicador de Páginas */}
-            <span style={{ fontSize: '0.875rem', color: 'var(--text-primary)', fontWeight: 600 }}>
+            <span style={{ fontSize: '0.825rem', color: 'var(--text-primary)', fontWeight: 600 }}>
               Página {page} de {meta.totalPages}
             </span>
 
@@ -526,93 +646,15 @@ const AdminPanel: React.FC = () => {
               onClick={() => setPage(p => Math.min(meta.totalPages, p + 1))}
               disabled={page === meta.totalPages}
               className="btn btn-secondary"
-              style={{ padding: '0.5rem', width: '2.25rem', height: '2.25rem', borderRadius: 'var(--radius-md)' }}
+              style={{ padding: 0, width: '2rem', height: '2rem', borderRadius: 'var(--radius-sm)' }}
             >
-              <ChevronRight size={16} />
+              <ChevronRight size={14} />
             </button>
           </div>
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* DIÁLOGO / MODAL PERSONALIZADO DE CONFIRMACIÓN DE ELIMINACIÓN */}
-      {/* ========================================================================= */}
-      {deletingTicket && (
-        <div style={{
-          position: 'fixed',
-          top: 0,
-          left: 0,
-          width: '100%',
-          height: '100%',
-          backgroundColor: 'rgba(0,0,0,0.5)',
-          backdropFilter: 'blur(4px)',
-          zIndex: 110,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          padding: '1rem',
-          animation: 'fadeIn 0.2s ease-out'
-        }}>
-          {/* Modal Real */}
-          <div className="card glass animate-fade-in" style={{
-            width: '100%',
-            maxWidth: '440px',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: '1.5rem',
-            padding: '2rem 1.5rem',
-            boxShadow: 'var(--shadow-lg)'
-          }}>
-            {/* Cabecera del Diálogo */}
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', color: 'var(--danger)' }}>
-              <div className="flex-center" style={{
-                width: '2.5rem',
-                height: '2.5rem',
-                borderRadius: '50%',
-                backgroundColor: 'var(--danger-light)',
-                color: 'var(--danger)'
-              }}>
-                <Trash2 size={18} />
-              </div>
-              <h3 style={{ fontSize: '1.2rem', fontWeight: 700, color: 'var(--text-primary)' }}>
-                ¿Eliminar boleta (Moderación)?
-              </h3>
-            </div>
 
-            {/* Mensaje Informativo */}
-            <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', lineHeight: '1.5' }}>
-              Como administrador, estás a punto de eliminar permanentemente la boleta de <strong>"{deletingTicket.title}"</strong> perteneciente al usuario <strong>"{deletingTicket.owner?.name}"</strong>. Esta acción no se puede deshacer.
-            </div>
-
-            {/* Acciones */}
-            <div style={{ display: 'flex', gap: '0.75rem', justifyContent: 'flex-end', borderTop: '1px solid var(--border)', paddingTop: '1.25rem' }}>
-              <button 
-                onClick={() => setDeletingTicket(null)}
-                disabled={isDeleting}
-                className="btn btn-secondary"
-                style={{ padding: '0.5rem 1rem', fontSize: '0.9rem' }}
-              >
-                Cancelar
-              </button>
-              <button 
-                onClick={handleDeleteConfirm}
-                disabled={isDeleting}
-                className="btn btn-danger"
-                style={{ padding: '0.5rem 1.25rem', fontSize: '0.9rem' }}
-              >
-                {isDeleting ? (
-                  <>
-                    <Loader2 className="animate-spin" size={16} />
-                    Eliminando...
-                  </>
-                ) : (
-                  'Confirmar Eliminación'
-                )}
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* Animaciones CSS inyectadas */}
       <style>{`

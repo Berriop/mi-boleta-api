@@ -1,8 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap');
 
 :root {
-  --font-sans: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-  
+  --font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+  --font-display: 'Space Grotesk', sans-serif;
+
   /* Tema Claro (Default) */
   --bg-app: #f8fafc;
   --bg-card: #ffffff;
@@ -11,100 +12,104 @@
   --text-primary: #0f172a;
   --text-secondary: #475569;
   --text-muted: #94a3b8;
-  
-  --primary: #4f46e5;
-  --primary-hover: #4338ca;
+
+  --primary: #6366f1;
+  --primary-hover: #4f46e5;
   --primary-light: #e0e7ff;
-  
+
   --success: #10b981;
   --success-light: #d1fae5;
   --success-text: #065f46;
-  
+
   --danger: #ef4444;
   --danger-light: #fee2e2;
   --danger-text: #991b1b;
-  
+
   --warning: #f59e0b;
   --warning-light: #fef3c7;
   --warning-text: #92400e;
-  
+
   --pending: #f59e0b;
   --pending-light: #fef3c7;
   --pending-text: #92400e;
-  
+
   --won: #10b981;
   --won-light: #d1fae5;
   --won-text: #065f46;
-  
+
   --lost: #ef4444;
   --lost-light: #fee2e2;
   --lost-text: #991b1b;
-  
+
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
   --shadow-premium: 0 20px 25px -5px rgb(0 0 0 / 0.05), 0 8px 10px -6px rgb(0 0 0 / 0.05);
-  
+
   --radius-sm: 8px;
   --radius-md: 12px;
   --radius-lg: 16px;
   --radius-full: 9999px;
-  
+
   --transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 [data-theme="dark"] {
-  /* Tema Oscuro */
-  --bg-app: #090d16;
-  --bg-card: #111827;
-  --bg-card-hover: #1f2937;
-  --border: #1f2937;
+  /* Tema Oscuro OLED True Black */
+  --bg-app: #000000;
+  --bg-card: #060608;
+  --bg-card-hover: #0b0b0e;
+  --border: rgba(255, 255, 255, 0.08);
   --text-primary: #f8fafc;
-  --text-secondary: #94a3b8;
-  --text-muted: #64748b;
-  
-  --primary: #6366f1;
-  --primary-hover: #4f46e5;
-  --primary-light: rgba(99, 102, 241, 0.15);
-  
+  --text-secondary: #8e9cae;
+  --text-muted: #4e5e70;
+
+  --primary: #8b5cf6;
+  --primary-hover: #a78bfa;
+  --primary-light: rgba(139, 92, 246, 0.12);
+
   --success: #10b981;
-  --success-light: rgba(16, 185, 129, 0.15);
+  --success-light: rgba(16, 185, 129, 0.12);
   --success-text: #34d399;
-  
-  --danger: #ef4444;
-  --danger-light: rgba(239, 68, 68, 0.15);
-  --danger-text: #fca5a5;
-  
+
+  --danger: #f43f5e;
+  --danger-light: rgba(244, 63, 94, 0.12);
+  --danger-text: #fda4af;
+
   --warning: #f59e0b;
-  --warning-light: rgba(245, 158, 11, 0.15);
-  --warning-text: #fcd34d;
-  
+  --warning-light: rgba(245, 158, 11, 0.12);
+  --warning-text: #fde047;
+
   --pending: #f59e0b;
-  --pending-light: rgba(245, 158, 11, 0.15);
-  --pending-text: #fcd34d;
-  
+  --pending-light: rgba(245, 158, 11, 0.12);
+  --pending-text: #fde047;
+
   --won: #10b981;
-  --won-light: rgba(16, 185, 129, 0.15);
+  --won-light: rgba(16, 185, 129, 0.12);
   --won-text: #34d399;
-  
-  --lost: #ef4444;
-  --lost-light: rgba(239, 68, 68, 0.15);
-  --lost-text: #fca5a5;
-  
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.5);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.3), 0 4px 6px -4px rgb(0 0 0 / 0.3);
-  --shadow-premium: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 8px 10px -6px rgba(0, 0, 0, 0.4);
+
+  --lost: #f43f5e;
+  --lost-light: rgba(244, 63, 94, 0.12);
+  --lost-text: #fda4af;
+
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.8);
+  --shadow-md: 0 4px 20px -2px rgba(0, 0, 0, 0.9);
+  --shadow-lg: 0 10px 30px -3px rgba(0, 0, 0, 0.95);
+  --shadow-premium: 0 20px 40px -5px rgba(0, 0, 0, 0.98);
 }
 
 /* CSS Reset */
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
 
-html, body, #root {
+html,
+body,
+#root {
   height: 100%;
 }
 
@@ -118,7 +123,10 @@ body {
   transition: background-color 0.3s ease, color 0.3s ease;
 }
 
-input, button, select, textarea {
+input,
+button,
+select,
+textarea {
   font-family: inherit;
   font-size: inherit;
   color: inherit;
@@ -129,6 +137,7 @@ a {
   text-decoration: none;
   transition: var(--transition);
 }
+
 a:hover {
   color: var(--primary-hover);
 }
@@ -138,13 +147,16 @@ a:hover {
   width: 8px;
   height: 8px;
 }
+
 ::-webkit-scrollbar-track {
   background: var(--bg-app);
 }
+
 ::-webkit-scrollbar-thumb {
   background: var(--border);
   border-radius: var(--radius-full);
 }
+
 ::-webkit-scrollbar-thumb:hover {
   background: var(--text-muted);
 }
@@ -192,6 +204,7 @@ a:hover {
   background-color: var(--primary);
   color: #ffffff;
 }
+
 .btn-primary:hover:not(:disabled) {
   background-color: var(--primary-hover);
   box-shadow: 0 0 12px rgba(99, 102, 241, 0.3);
@@ -202,6 +215,7 @@ a:hover {
   border-color: var(--border);
   color: var(--text-primary);
 }
+
 .btn-secondary:hover:not(:disabled) {
   background-color: var(--bg-card-hover);
 }
@@ -210,6 +224,7 @@ a:hover {
   background-color: var(--danger);
   color: #ffffff;
 }
+
 .btn-danger:hover:not(:disabled) {
   background-color: #dc2626;
   box-shadow: 0 0 12px rgba(239, 68, 68, 0.3);
@@ -321,8 +336,15 @@ a:hover {
 
 /* Animations */
 @keyframes fadeIn {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 .animate-fade-in {
@@ -330,8 +352,15 @@ a:hover {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: .5; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: .5;
+  }
 }
 
 .skeleton {
@@ -365,4 +394,210 @@ a:hover {
   align-items: center;
   gap: 0.75rem;
   animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+/* ========================================================================= */
+/* SISTEMA DE TALONARIOS DIGITALES (TICKET STUBS) & ELEMENTOS DE DISEÑO */
+/* ========================================================================= */
+
+.ticket-stub {
+  display: flex;
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  position: relative;
+  overflow: hidden;
+  transition: var(--transition);
+  min-height: 180px;
+}
+
+.ticket-stub:hover {
+  transform: translateY(-2px);
+  border-color: var(--primary);
+  box-shadow: 0 8px 30px rgba(139, 92, 246, 0.12);
+}
+
+.ticket-stub-main {
+  flex: 1;
+  padding: 1.25rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.ticket-stub-divider-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+  width: 24px;
+  user-select: none;
+}
+
+.ticket-stub-divider {
+  height: 100%;
+  width: 1px;
+  border-left: 2px dashed var(--border);
+}
+
+.ticket-stub-notch {
+  width: 20px;
+  height: 20px;
+  background-color: var(--bg-app);
+  border-radius: 50%;
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid var(--border);
+  z-index: 2;
+  box-shadow: inset 0 0 4px rgba(0, 0, 0, 0.2);
+}
+
+.ticket-stub-notch-top {
+  top: -10px;
+}
+
+.ticket-stub-notch-bottom {
+  bottom: -10px;
+}
+
+.ticket-stub-right {
+  width: 140px;
+  padding: 1.25rem 1rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  background-color: rgba(255, 255, 255, 0.015);
+  border-left: 1px solid rgba(255, 255, 255, 0.02);
+  text-align: center;
+  gap: 0.75rem;
+}
+
+@media (max-width: 580px) {
+  .ticket-stub {
+    flex-direction: column;
+    min-height: auto;
+  }
+  .ticket-stub-divider-container {
+    width: 100%;
+    height: 24px;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+  }
+  .ticket-stub-divider {
+    width: 90%;
+    height: 1px;
+    border-left: none;
+    border-top: 2px dashed var(--border);
+  }
+  .ticket-stub-notch {
+    top: 50%;
+    transform: translateY(-50%);
+  }
+  .ticket-stub-notch-top {
+    left: -10px;
+    top: 50%;
+  }
+  .ticket-stub-notch-bottom {
+    right: -10px;
+    left: auto;
+    top: 50%;
+  }
+  .ticket-stub-right {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid rgba(255, 255, 255, 0.02);
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+  }
+}
+
+.ticket-number-display {
+  font-family: var(--font-display);
+  font-size: 2.15rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  text-shadow: 0 0 10px rgba(139, 92, 246, 0.15);
+}
+
+.status-dot-container {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--radius-full);
+  background-color: var(--bg-card-hover);
+  border: 1px solid var(--border);
+  font-family: var(--font-display);
+  font-size: 0.725rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+}
+
+.status-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Micro-LED glowing colors */
+.status-dot-pending {
+  background-color: var(--warning);
+  box-shadow: 0 0 8px var(--warning);
+  animation: breathing-warning 2.5s infinite ease-in-out;
+}
+
+.status-dot-won {
+  background-color: var(--success);
+  box-shadow: 0 0 8px var(--success);
+  animation: breathing-success 2.5s infinite ease-in-out;
+}
+
+.status-dot-lost {
+  background-color: var(--danger);
+  box-shadow: 0 0 8px var(--danger);
+  animation: breathing-danger 2.5s infinite ease-in-out;
+}
+
+@keyframes breathing-warning {
+  0%, 100% {
+    opacity: 0.6;
+    box-shadow: 0 0 3px var(--warning);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 9px var(--warning);
+  }
+}
+
+@keyframes breathing-success {
+  0%, 100% {
+    opacity: 0.6;
+    box-shadow: 0 0 3px var(--success);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 9px var(--success);
+  }
+}
+
+@keyframes breathing-danger {
+  0%, 100% {
+    opacity: 0.6;
+    box-shadow: 0 0 3px var(--danger);
+  }
+  50% {
+    opacity: 1;
+    box-shadow: 0 0 9px var(--danger);
+  }
 }
