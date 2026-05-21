@@ -245,17 +245,29 @@ const AdminPanel: React.FC = () => {
             className="form-input"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            style={{ paddingLeft: '2.5rem', height: '2.5rem' }}
+            style={{ 
+              paddingLeft: '2.5rem', 
+              paddingRight: '1rem', 
+              paddingTop: '0.375rem', 
+              paddingBottom: '0.375rem', 
+              height: '2.5rem',
+              lineHeight: 'normal'
+            }}
           />
         </div>
 
         {/* Filtro Tipo Juego */}
-        <div style={{ flex: '1 1 150px' }}>
+        <div style={{ flex: '1 1 auto', minWidth: '180px' }}>
           <select 
             className="form-input"
             value={filterGameType}
             onChange={(e) => setFilterGameType(e.target.value)}
-            style={{ height: '2.5rem', cursor: 'pointer' }}
+            style={{ 
+              height: '2.5rem', 
+              padding: '0 2.25rem 0 1rem', 
+              cursor: 'pointer',
+              lineHeight: 'normal'
+            }}
           >
             <option value="">Todos los Tipos</option>
             {GAME_TYPES.map(t => (
@@ -265,12 +277,17 @@ const AdminPanel: React.FC = () => {
         </div>
 
         {/* Filtro Estado */}
-        <div style={{ flex: '1 1 150px' }}>
+        <div style={{ flex: '1 1 auto', minWidth: '180px' }}>
           <select 
             className="form-input"
             value={filterStatus}
             onChange={(e) => setFilterStatus(e.target.value)}
-            style={{ height: '2.5rem', cursor: 'pointer' }}
+            style={{ 
+              height: '2.5rem', 
+              padding: '0 2.25rem 0 1rem', 
+              cursor: 'pointer',
+              lineHeight: 'normal'
+            }}
           >
             <option value="">Todos los Estados</option>
             {TICKET_STATUSES.map(s => (
@@ -280,13 +297,18 @@ const AdminPanel: React.FC = () => {
         </div>
 
         {/* Selector de Tamaño de Página */}
-        <div style={{ flex: '0 0 120px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+        <div style={{ flex: '0 0 130px', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
           <span style={{ fontSize: '0.775rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Filas:</span>
           <select 
             className="form-input"
             value={pageSize}
             onChange={(e) => setPageSize(Number(e.target.value))}
-            style={{ height: '2.5rem', cursor: 'pointer', padding: '0 0.5rem' }}
+            style={{ 
+              height: '2.5rem', 
+              cursor: 'pointer', 
+              padding: '0 1.75rem 0 0.5rem',
+              lineHeight: 'normal'
+            }}
           >
             <option value={5}>5</option>
             <option value={10}>10</option>

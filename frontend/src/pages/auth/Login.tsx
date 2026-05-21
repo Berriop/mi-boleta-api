@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate, useLocation, Link, useSearchParams } from 'react-router-dom';
+import { useNavigate, Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../core/store/authContext';
 import { parseValidationError } from '../../core/api/apiClient';
 import { Mail, Lock, LogIn, AlertCircle, Eye, EyeOff } from 'lucide-react';
 
 const Login: React.FC = () => {
-  const { login, isAuthenticated } = useAuth();
+  const { login, isAuthenticated, user } = useAuth();
   const navigate = useNavigate();
-  const location = useLocation();
   const [searchParams] = useSearchParams();
 
   // Estados del formulario
@@ -21,14 +20,16 @@ const Login: React.FC = () => {
   const [generalError, setGeneralError] = useState<string | null>(null);
   const [showExpiredWarning, setShowExpiredWarning] = useState(false);
 
-  // Redirigir si ya está autenticado
-  const from = location.state?.from?.pathname || '/dashboard';
-
+  // Redirigir si ya está autenticado según el rol
   useEffect(() => {
-    if (isAuthenticated) {
-      navigate(from, { replace: true });
+    if (isAuthenticated && user) {
+      if (user.role === 'admin') {
+        navigate('/admin', { replace: true });
+      } else {
+        navigate('/dashboard', { replace: true });
+      }
     }
-  }, [isAuthenticated, navigate, from]);
+  }, [isAuthenticated, user, navigate]);
 
   // Capturar si la sesión expiró
   useEffect(() => {
