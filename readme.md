@@ -56,15 +56,19 @@ cd backend
 npm run dev
 ```
 
-La API estará disponible en `http://localhost:4000/api/v1`.
+La API local estará disponible en `http://localhost:4000/api/v1`.
+
+> Nota: si usas la API remota compartida en Render, no necesitas levantar el backend local.
 
 ### Frontend
 
-1. (Opcional) Crea un archivo `.env` en `frontend/` con la URL de la API:
+1. Crea un archivo `.env` en `frontend/` con la URL de la API remota:
 
 ```env
-VITE_API_URL=http://localhost:4000/api/v1
+VITE_API_URL=https://mi-boleta-api-y9dv.onrender.com/api/v1
 ```
+
+> Esta API está conectada a una base de datos Supabase compartida. Guarda solo datos de prueba y evita dejar información sensible o datos de producción.
 
 2. Ejecuta la app de React:
 
