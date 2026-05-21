@@ -23,6 +23,9 @@ const GAME_TYPES: GameType[] = ['Lotería', 'Rifa', 'Sorteo', 'Boleta', 'Juego o
 const TICKET_STATUSES: TicketStatus[] = ['Pendiente', 'Ganado', 'Perdido'];
 
 const Dashboard: React.FC = () => {
+  // Referencia al formulario
+  const formRef = React.useRef<HTMLFormElement>(null);
+
   // Lista de boletas
   const [tickets, setTickets] = useState<Ticket[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -706,15 +709,12 @@ const Dashboard: React.FC = () => {
             height: '100%',
             borderRadius: 0,
             borderLeft: '1px solid var(--border)',
-            padding: '2rem 1.5rem',
             display: 'flex',
             flexDirection: 'column',
-            gap: '1.5rem',
-            overflowY: 'auto',
             boxShadow: 'var(--shadow-premium)'
           }}>
             {/* Header del Drawer */}
-            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <div style={{ padding: '2rem 1.5rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <div>
                 <h2 style={{ fontSize: '1.35rem', fontWeight: 800, letterSpacing: '-0.025em' }}>
                   {editingTicket ? 'Editar Boleta' : 'Registrar Nueva Boleta'}
@@ -727,14 +727,16 @@ const Dashboard: React.FC = () => {
                 onClick={() => setIsDrawerOpen(false)}
                 disabled={isSubmitting}
                 className="btn btn-secondary"
-                style={{ width: '2.25rem', height: '2.25rem', padding: 0, borderRadius: '50%' }}
+                style={{ width: '2.25rem', height: '2.25rem', padding: 0, borderRadius: '50%', flexShrink: 0 }}
               >
                 <X size={16} />
               </button>
             </div>
 
-            {/* Formulario */}
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
+            {/* Contenedor scrollable del formulario */}
+            <div style={{ overflowY: 'auto', flex: 1, paddingBottom: '1rem' }}>
+              {/* Formulario */}
+              <form ref={formRef} onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', padding: '0 1.5rem' }}>
 
               {/* Aviso de error general (backend) */}
               {formErrors.general && (
@@ -869,35 +871,47 @@ const Dashboard: React.FC = () => {
                 />
                 {formErrors.notes && <span className="form-error">{formErrors.notes}</span>}
               </div>
-
-              {/* Acciones del Formulario */}
-              <div style={{ display: 'flex', gap: '1rem', marginTop: 'auto', paddingTop: '1rem', borderTop: '1px solid var(--border)' }}>
-                <button
-                  type="button"
-                  onClick={() => setIsDrawerOpen(false)}
-                  disabled={isSubmitting}
-                  className="btn btn-secondary"
-                  style={{ flex: 1 }}
-                >
-                  Cancelar
-                </button>
-                <button
-                  type="submit"
-                  disabled={isSubmitting}
-                  className="btn btn-primary"
-                  style={{ flex: 1.5 }}
-                >
-                  {isSubmitting ? (
-                    <>
-                      <Loader2 className="animate-spin" size={18} />
-                      Guardando...
-                    </>
-                  ) : (
-                    'Guardar Boleta'
-                  )}
-                </button>
-              </div>
             </form>
+            </div>
+
+            {/* Acciones del Formulario - Fijas al final */}
+            <div style={{ 
+              display: 'flex', 
+              gap: '1rem', 
+              padding: '1rem 1.5rem',
+              borderTop: '1px solid var(--border)',
+              backgroundColor: 'rgba(255,255,255,0.5)',
+              backdropFilter: 'blur(10px)',
+              position: 'sticky',
+              bottom: 0,
+              zIndex: 101
+            }}>
+              <button
+                type="button"
+                onClick={() => setIsDrawerOpen(false)}
+                disabled={isSubmitting}
+                className="btn btn-secondary"
+                style={{ flex: 1 }}
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                disabled={isSubmitting}
+                className="btn btn-primary"
+                style={{ flex: 1.5 }}
+                onClick={() => formRef.current?.submit()}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="animate-spin" size={18} />
+                    Guardando...
+                  </>
+                ) : (
+                  'Guardar Boleta'
+                )}
+              </button>
+            </div>
           </div>
         </div>
       )}
