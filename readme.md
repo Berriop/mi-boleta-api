@@ -3,155 +3,222 @@
 
 **Entrega:** Mayo 21 — 15%
 
-## 📌 Contexto del proyecto
+## 📌 Resumen del proyecto
 
-En muchas ocasiones las personas participan en rifas, loterías, sorteos o compran boletas de diferentes maneras:
+Este repositorio contiene una solución monorepo para una app de boletas/sorteos con:
 
-- En la calle
-- A familiares o amigos
-- En supermercados o centros comerciales (sorteos)
-- Por internet
-- En eventos o festivales
-- Porque soñaron un número y decidieron jugarlo
+- `backend/`: API REST en Express + TypeScript + Prisma + JWT
+- `frontend/`: UI en React + TypeScript + Vite
 
-El problema es que muchas veces las personas:
+La aplicación permite al usuario registrarse, iniciar sesión, persistir sesión con JWT, crear/editar/eliminar boletas, ver un dashboard con métricas y una sección de administración con filtros y paginación.
 
-- olvidan qué número jugaron,
-- no recuerdan cuándo era el sorteo,
-- pierden la boleta,
-- o incluso nunca revisan si ganaron.
+## 🧭 Modo de uso
 
-Después de varios días aparece la típica frase: *"¿Y si sí me lo gané y nunca revisé?"*
+### Requisitos
 
-La idea de esta práctica es desarrollar una aplicación web moderna que permita a cada usuario registrar y administrar todas sus boletas, rifas, loterías y sorteos en un solo lugar.
+- Node.js 20+ (recomendado)
+- npm 10+
+- PostgreSQL local o remota
 
-La aplicación deberá permitir que los usuarios:
+### Instalación
 
-- creen una cuenta,
-- inicien sesión,
-- registren sus boletas / sorteos,
-- consulten sus boletas / sorteos,
-- recuerden fechas de sorteos.
+Ejecuta desde la raíz del proyecto:
 
-Tener una mejor organización de toda la información relacionada con juegos de azar y sorteos.
-
-## 🎯 Objetivo de la práctica
-
-Desarrollar el **frontend completo** de una aplicación web conectada a la API REST de este repositorio.
-
-El objetivo es aplicar todos los conocimientos vistos durante el curso:
-
-- HTML semántico
-- CSS moderno y responsive
-- TypeScript
-- React / Next.js
-- Manejo de estado
-- Consumo de APIs REST
-- Componentización
-- Formularios
-- Manejo de errores
-- Routing
-- Persistencia de sesión (localStorage, sessionStorage, cookies)
-- Buenas prácticas de desarrollo web (clean architecture)
-
-## 📱 Requisitos funcionales mínimos
-
-### 1. 🔐 Autenticación
-
-- Registro de usuario (Nombre, Email, Contraseña)
-- Inicio de sesión (Login)
-- Manejo de token JWT
-- Persistencia de sesión
-- Cierre de sesión / Botón logout
-
-### 2. 🎟 Gestión de boletas / sorteos (CRUD)
-
-Cada usuario debe poder crear registros con:
-
-- Nombre del sorteo
-- Número jugado (opcional)
-- Fecha del sorteo
-- Valor apostado (opcional)
-- Lugar donde se compró
-- Tipo de juego: `Lotería` / `Rifa` / `Sorteo` / `Boleta` / `Juego ocasional`
-- Estado: `Pendiente` / `Ganado` / `Perdido`
-- Notas adicionales (por ejemplo el premio a ganar)
-
-CRUD completo:
-
-- ✅ Crear registros
-- ✅ Visualizar registros
-- ✅ Editar registros
-- ✅ Eliminar registros
-
-### 3. 📋 Dashboard principal
-
-- Cantidad de juegos registrados
-- Próximos sorteos
-- Juegos pendientes
-- Historial (todas las boletas / sorteos)
-
-### 4. 👤 Página del administrador
-
-Filtros y búsqueda de premios / sorteos. Debe permitir:
-
-- Buscar por número
-- Buscar por nombre
-- Filtrar por estado
-- Filtrar por tipo de juego
-- Paginación
-
-### Validaciones generales
-
-- Campos vacíos
-- Formato email
-- Fechas válidas
-- Números inválidos
-
-Mostrar errores visualmente.
-
----
-
-# 🛠 API REST de soporte
-
-> Esta sección documenta la API que ya está construida y que el frontend debe consumir.
-
-## Stack
-
-- **Express** + **TypeScript**
-- **Prisma ORM** + **Prisma Postgres** (con `@prisma/adapter-pg`)
-- **JWT** (jsonwebtoken) para autenticación
-- **bcrypt** para hash de contraseñas
-- **class-validator** + **class-transformer** para validación de DTOs
-- **Clean Architecture** (domain / application / infrastructure / interface)
-
-## Estructura del proyecto
-
+```bash
+npm install
+npm install --prefix backend
+npm install --prefix frontend
 ```
-src/
-├── domain/              # Entidades, repositorios (interfaces), errores, servicios (puertos)
-│   ├── entities/        # User, Ticket
-│   ├── repositories/    # UserRepository, TicketRepository
-│   ├── services/        # PasswordHasher (puerto)
-│   └── errors/          # DomainError
-├── application/         # Casos de uso, DTOs de aplicación
-│   ├── usecases/
-│   │   ├── auth/        # RegisterUser, LoginUser
-│   │   └── tickets/     # CreateTicket, GetTickets, GetTicketById, UpdateTicket, DeleteTicket, GetAllTickets
-│   └── dtos/            # PublicUser
-├── infrastructure/      # Implementaciones concretas
-│   ├── prisma/          # Cliente Prisma (con adapter-pg)
-│   ├── prisma-client/   # Cliente generado (gitignored)
-│   ├── repositories/    # PrismaUserRepository, PrismaTicketRepository
-│   ├── security/        # BcryptPasswordHasher (adapter)
-│   ├── config/          # env, jwt
-│   └── validators/      # DTOs con class-validator
-└── interface/           # Capa HTTP
-    ├── controllers/     # authController, ticketsController, adminController
-    ├── middlewares/     # authMiddleware, errorMiddleware, validateDto
-    ├── routes/          # Router por versión (v1)
-    └── types/           # Augmentaciones de Express (req.userId, etc.)
+
+### Backend
+
+1. Copia `backend/.env.example` a `backend/.env`.
+2. Ajusta las variables:
+
+```env
+DATABASE_URL=postgres://USER:PASSWORD@HOST:PORT/DATABASE
+JWT_SECRET=algosecreto
+PORT=4000
 ```
+
+3. Genera Prisma y ejecuta migraciones:
+
+```bash
+cd backend
+npm run prisma:generate
+npm run prisma:migrate -- --name init
+```
+
+4. Ejecuta el backend:
+
+```bash
+cd backend
+npm run dev
+```
+
+La API estará disponible en `http://localhost:4000/api/v1`.
+
+### Frontend
+
+1. (Opcional) Crea un archivo `.env` en `frontend/` con la URL de la API:
+
+```env
+VITE_API_URL=http://localhost:4000/api/v1
+```
+
+2. Ejecuta la app de React:
+
+```bash
+cd frontend
+npm run dev
+```
+
+La aplicación se sirve en `http://localhost:5173`.
+
+### Iniciar ambos juntos
+
+Desde la raíz:
+
+```bash
+npm run dev
+```
+
+> Este comando usa `concurrently` para levantar frontend y backend en paralelo.
+
+## 🎯 Funcionalidades implementadas
+
+- Registro y login con JWT
+- Persistencia de sesión en `localStorage`
+- Logout que elimina token y usuario
+- CRUD completo de boletas: crear, listar, editar, eliminar
+- Filtros por búsqueda, estado y tipo de juego
+- Dashboard con métricas y sorteos próximos
+- Ruta `admin` protegida para usuarios con `role = admin`
+- Manejo de errores del backend y validación cliente
+- Routing privado y 403/404
+- Arquitectura con carpetas separadas: `pages`, `components`, `core`, `api`, `store`
+
+## 🔧 Mapeo a la rúbrica
+
+### 1. Autenticación y persistencia de sesión
+
+- `frontend/src/core/store/authContext.tsx`: `login`, `register`, `logout`
+- `frontend/src/core/api/apiClient.ts`: inyección de token en headers y manejo de `401`
+- `localStorage` guarda `mi_boleta_token` y `mi_boleta_user`
+- Logout limpia la sesión y redirige al login
+- `Login.tsx` y `Register.tsx` muestran errores del backend y validación de credenciales
+
+### 2. CRUD completo de boletas / sorteos
+
+- `frontend/src/pages/dashboard/Dashboard.tsx`: listado de boletas, creación, edición y eliminación
+- El formulario contiene campos de `title`, `gameType`, `gameNumber`, `gameDate`, `amount`, `place`, `status`, `notes`
+- `fetchTickets()` actualiza la UI tras cada operación sin recarga manual
+- Confirmación de eliminación en modal antes de borrar
+
+### 3. Dashboard principal
+
+- `Dashboard.tsx` muestra métricas: total de boletas, pendientes, ganadas, monto invertido
+- Muestra sorteos próximos y lista de historial
+- Conteos se actualizan al recargar datos del backend
+
+### 4. Página de administrador
+
+- `frontend/src/pages/admin/AdminPanel.tsx` implementa la vista `/admin`
+- `frontend/src/routes.tsx` protege la ruta con `ProtectedRoute adminOnly={true}`
+- Se consumen datos de `/admin/tickets`
+- Soporta filtros por `q`, `status`, `gameType` y paginación combinados
+
+### 5. Validaciones y manejo de errores
+
+- `Login.tsx`, `Register.tsx` y `Dashboard.tsx` validan campos vacíos, email, contraseña, fechas y números
+- Errores del backend de tipo `Datos inválidos:` se parsean y se muestran junto a cada campo
+- Los botones se deshabilitan durante la carga (`isLoading`, `isSubmitting`)
+
+### 6. Diseño, responsive y UX
+
+- UI con componentes reutilizables y estilos del proyecto
+- Layout responsivo usando `grid`, botones y tarjetas adaptables
+- Estados de carga, error y vacío están contemplados en el diseño
+- Navegación clara con `Navbar` y secciones bien jerarquizadas
+
+### 7. Arquitectura del frontend
+
+- `frontend/src/core`: cliente API, store de auth y tipos globales
+- `frontend/src/components`: layout y componentes reutilizables
+- `frontend/src/pages`: páginas por funcionalidad
+- Uso de TypeScript con tipos específicos (`Ticket`, `User`, `ApiResponse`)
+- Lógica de negocio separada de la UI en `apiClient` y `authContext`
+
+### 8. Consumo correcto de la API REST
+
+- `frontend/src/core/api/apiClient.ts` centraliza todas las llamadas HTTP
+- `Authorization: Bearer <token>` agregado automáticamente en requests protegidas
+- Manejo de errores HTTP específicos: `401` fuerza logout y redirección
+- Se usa el contrato de la API para `data` y `meta`
+
+### 9. Routing y protección de rutas
+
+- `frontend/src/routes.tsx`: rutas públicas (`/login`, `/register`) y privadas (`/dashboard`, `/admin`)
+- `ProtectedRoute.tsx` redirige a `/login` si no hay sesión
+- `/admin` redirige a `/403` si el usuario no es admin
+- Existe página `NotFound` para rutas inválidas
+
+### 10. Calidad del código
+
+- TypeScript en frontend y backend
+- Estructura clara de archivos y nombres coherentes
+- `frontend/package.json` incluye `lint` y `build` para revisión
+- Sin dependencias innecesarias en la configuración principal
+
+### 11. Despliegue y entrega
+
+- Repositorio organizado y público en GitHub
+- `README` documenta cómo instalar, configurar y ejecutar backend/frontend
+- No hay demo desplegado actualmente. Si se despliega, agregar el link aquí.
+
+## 🚀 Comandos útiles
+
+Desde la raíz:
+
+```bash
+npm run install:all
+npm run dev
+```
+
+Backend:
+
+```bash
+cd backend
+npm run dev
+```
+
+Frontend:
+
+```bash
+cd frontend
+npm run dev
+```
+
+Construir frontend:
+
+```bash
+cd frontend
+npm run build
+```
+
+Prisma Backend:
+
+```bash
+cd backend
+npm run prisma:generate
+npm run prisma:migrate -- --name init
+```
+
+## 📌 Notas importantes
+
+- No se debe comitear `.env` con credenciales reales.
+- `backend/.env.example` está disponible como plantilla.
+- Si despliegas la aplicación, agrega la URL de demo en esta sección.
 
 ## ⚙️ Setup local
 

@@ -139,12 +139,12 @@ const Dashboard: React.FC = () => {
         if (diffDays < 0) {
           // Fecha anterior a hoy -> no puede ser Pendiente
           if (status === 'Pendiente') {
-            localErrors.status = 'La fecha es anterior a hoy; el estado debe ser "Ganado" o "Perdido".';
+            localErrors.status = 'El sorteo ya ha ocurrido; el estado debe ser "Ganado" o "Perdido".';
           }
         } else if (diffDays === 1) {
           // Si juega mañana, forzar pendiente
           if (status !== 'Pendiente') {
-            localErrors.status = 'Si el sorteo es mañana, el estado debe ser "Pendiente".';
+            localErrors.status = 'El sorteo no ha jugado aún; el estado debe ser "Pendiente".';
           }
         }
       } catch (e) {
