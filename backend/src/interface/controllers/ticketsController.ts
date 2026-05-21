@@ -25,6 +25,22 @@ export const createTicket = async (req: Request, res: Response, next: NextFuncti
   try {
     const userId = req.userId!;
     const dto = req.body as CreateTicketDto;
+    // Validación de fecha vs estado (backend)
+    try {
+      const selected = new Date(dto.gameDate as any);
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const msPerDay = 1000 * 60 * 60 * 24;
+      const diffDays = Math.round((selected.getTime() - today.getTime()) / msPerDay);
+      if (diffDays < 0 && dto.status === 'Pendiente') {
+        return res.status(400).json({ error: 'La fecha es anterior a hoy; el estado debe ser Ganado o Perdido.' });
+      }
+      if (diffDays === 1 && dto.status !== 'Pendiente') {
+        return res.status(400).json({ error: 'Si el sorteo es mañana, el estado debe ser Pendiente.' });
+      }
+    } catch (e) {
+      // ignore parsing errors here; validation middleware will handle bad dates
+    }
     const ticket = await createTicketUseCase.execute({
       userId,
       title: dto.title,
@@ -90,6 +106,25 @@ export const updateTicket = async (req: Request, res: Response, next: NextFuncti
     const userId = req.userId!;
     const dto = req.body as UpdateTicketDto;
     const isAdmin = req.userRole === 'admin';
+    // Validación de fecha vs estado al actualizar: obtener valores efectivos
+    try {
+      const existing = await getTicketByIdUseCase.execute(req.params.id, userId);
+      const effectiveDate = dto.gameDate ? new Date(dto.gameDate as any) : new Date(existing.gameDate);
+      const effectiveStatus = dto.status ?? existing.status;
+      const now = new Date();
+      const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+      const msPerDay = 1000 * 60 * 60 * 24;
+      const diffDays = Math.round((effectiveDate.getTime() - today.getTime()) / msPerDay);
+      if (diffDays < 0 && effectiveStatus === 'Pendiente') {
+        return res.status(400).json({ error: 'La fecha es anterior a hoy; el estado debe ser Ganado o Perdido.' });
+      }
+      if (diffDays === 1 && effectiveStatus !== 'Pendiente') {
+        return res.status(400).json({ error: 'Si el sorteo es mañana, el estado debe ser Pendiente.' });
+      }
+    } catch (e) {
+      // Si no se puede obtener el ticket, continuamos y el usecase gestionará errores
+    }
+
     const updated = await updateTicketUseCase.execute(req.params.id, userId, dto, isAdmin);
     res.status(200).json({ data: updated });
   } catch (error) {

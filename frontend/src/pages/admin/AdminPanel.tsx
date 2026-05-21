@@ -36,6 +36,7 @@ const AdminPanel: React.FC = () => {
   const [filterGameType, setFilterGameType] = useState<string>('');
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(10);
+  const [selectedView, setSelectedView] = useState<'upcoming' | 'finished'>('upcoming');
 
   const [updatingTicketId, setUpdatingTicketId] = useState<string | null>(null);
 
@@ -91,8 +92,18 @@ const AdminPanel: React.FC = () => {
   // Calcular KPIs basados en lo que tenemos cargado
   const totalItems = meta?.total || tickets.length;
   const wonCount = tickets.filter(t => t.status === 'Ganado').length;
-  const pendingCount = tickets.filter(t => t.status === 'Pendiente').length;
+  const finishedCount = tickets.filter(t => t.status === 'Ganado' || t.status === 'Perdido').length;
   const totalInvestment = tickets.reduce((sum, t) => sum + (t.amount || 0), 0);
+
+  const upcomingTickets = tickets
+    .filter((t) => t.status === 'Pendiente')
+    .sort((a, b) => new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime());
+
+  const finishedList = tickets
+    .filter((t) => t.status === 'Ganado' || t.status === 'Perdido')
+    .sort((a, b) => new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime());
+
+  const visibleTickets = selectedView === 'upcoming' ? upcomingTickets : finishedList;
 
   // Formateadores auxiliares
   const formatCurrency = (val?: number) => {
@@ -120,6 +131,70 @@ const AdminPanel: React.FC = () => {
         <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>
           Monitorea, filtra y gestiona todas las boletas y sorteos de todos los usuarios registrados en el sistema.
         </p>
+      </div>
+
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+        <button
+          type="button"
+          onClick={() => {
+            setFilterStatus('');
+            setSelectedView('upcoming');
+          }}
+          className="card glass"
+          style={{
+            padding: '1.25rem',
+            textAlign: 'left',
+            border: selectedView === 'upcoming' ? '1px solid var(--primary)' : '1px solid transparent',
+            boxShadow: selectedView === 'upcoming' ? '0 0 0 1px rgba(59, 130, 246, 0.15)' : undefined,
+            cursor: 'pointer'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.75rem' }}>
+            <div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                Sorteos Próximos
+              </div>
+              <div style={{ fontSize: '1.35rem', fontWeight: 800, marginTop: '0.35rem' }}>{upcomingTickets.length}</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2.5rem', height: '2.5rem', borderRadius: '12px', backgroundColor: 'var(--pending-light)', color: 'var(--pending-text)' }}>
+              <Clock size={18} />
+            </div>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6 }}>
+            Ver las boletas pendientes organizadas por fecha de sorteo.
+          </p>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setFilterStatus('');
+            setSelectedView('finished');
+          }}
+          className="card glass"
+          style={{
+            padding: '1.25rem',
+            textAlign: 'left',
+            border: selectedView === 'finished' ? '1px solid var(--primary)' : '1px solid transparent',
+            boxShadow: selectedView === 'finished' ? '0 0 0 1px rgba(59, 130, 246, 0.15)' : undefined,
+            cursor: 'pointer'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.75rem' }}>
+            <div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>
+                Terminados
+              </div>
+              <div style={{ fontSize: '1.35rem', fontWeight: 800, marginTop: '0.35rem' }}>{finishedCount}</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2.5rem', height: '2.5rem', borderRadius: '12px', backgroundColor: 'var(--success-light)', color: 'var(--success)' }}>
+              <Check size={18} />
+            </div>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6 }}>
+            Ver todas las boletas que ya terminaron el sorteo.
+          </p>
+        </button>
       </div>
 
       {/* Grid de KPIs / Estadísticas */}
@@ -193,7 +268,7 @@ const AdminPanel: React.FC = () => {
           </div>
           <div>
             <div style={{ fontSize: '0.7rem', fontWeight: 600, color: 'var(--text-secondary)', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Pendientes (Esta Página)</div>
-            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2', marginTop: '2px', fontFamily: 'var(--font-display)' }}>{pendingCount}</div>
+            <div style={{ fontSize: '1.5rem', fontWeight: 800, color: 'var(--text-primary)', lineHeight: '1.2', marginTop: '2px', fontFamily: 'var(--font-display)' }}>{finishedCount}</div>
           </div>
         </div>
 
@@ -343,7 +418,7 @@ const AdminPanel: React.FC = () => {
             </div>
           ))}
         </div>
-      ) : tickets.length === 0 ? (
+      ) : visibleTickets.length === 0 ? (
         /* Estado Vacío */
         <div className="card flex-center animate-fade-in" style={{ 
           flexDirection: 'column', 
@@ -384,7 +459,7 @@ const AdminPanel: React.FC = () => {
           gridTemplateColumns: 'repeat(auto-fill, minmax(420px, 1fr))',
           gap: '1.5rem'
         }}>
-          {tickets.map(ticket => (
+          {visibleTickets.map(ticket => (
             <div 
               key={ticket.id} 
               className="ticket-stub animate-fade-in"

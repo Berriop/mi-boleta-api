@@ -15,7 +15,8 @@ import {
   FileText,
   MapPin,
   X,
-  Loader2
+  Loader2,
+  Check
 } from 'lucide-react';
 
 const GAME_TYPES: GameType[] = ['Lotería', 'Rifa', 'Sorteo', 'Boleta', 'Juego ocasional'];
@@ -31,6 +32,7 @@ const Dashboard: React.FC = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [filterStatus, setFilterStatus] = useState<string>('');
   const [filterGameType, setFilterGameType] = useState<string>('');
+  const [selectedView, setSelectedView] = useState<'upcoming' | 'finished'>('upcoming');
 
   // Drawer / Formulario de Agregar/Editar
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -125,6 +127,31 @@ const Dashboard: React.FC = () => {
     if (amount && isNaN(Number(amount))) localErrors.amount = 'El monto debe ser un número válido';
     if (amount && Number(amount) < 0) localErrors.amount = 'El monto no puede ser negativo';
 
+    // Validación basada en la fecha versus hoy
+    if (gameDate) {
+      try {
+        const selectedDate = new Date(gameDate + 'T00:00:00');
+        const now = new Date();
+        const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+        const msPerDay = 1000 * 60 * 60 * 24;
+        const diffDays = Math.round((selectedDate.getTime() - today.getTime()) / msPerDay);
+
+        if (diffDays < 0) {
+          // Fecha anterior a hoy -> no puede ser Pendiente
+          if (status === 'Pendiente') {
+            localErrors.status = 'La fecha es anterior a hoy; el estado debe ser "Ganado" o "Perdido".';
+          }
+        } else if (diffDays === 1) {
+          // Si juega mañana, forzar pendiente
+          if (status !== 'Pendiente') {
+            localErrors.status = 'Si el sorteo es mañana, el estado debe ser "Pendiente".';
+          }
+        }
+      } catch (e) {
+        // Si hay problema al parsear la fecha, se ignora aquí y se deja la validación previa
+      }
+    }
+
     if (Object.keys(localErrors).length > 0) {
       setFormErrors(localErrors);
       setIsSubmitting(false);
@@ -180,7 +207,18 @@ const Dashboard: React.FC = () => {
   const totalTickets = tickets.length;
   const pendingTickets = tickets.filter(t => t.status === 'Pendiente').length;
   const wonTickets = tickets.filter(t => t.status === 'Ganado').length;
+  const finishedTickets = tickets.filter(t => t.status === 'Ganado' || t.status === 'Perdido').length;
   const totalInvestment = tickets.reduce((sum, t) => sum + (t.amount || 0), 0);
+
+  const upcomingTickets = tickets
+    .filter((t) => t.status === 'Pendiente')
+    .sort((a, b) => new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime());
+
+  const finishedList = tickets
+    .filter((t) => t.status === 'Ganado' || t.status === 'Perdido')
+    .sort((a, b) => new Date(a.gameDate).getTime() - new Date(b.gameDate).getTime());
+
+  const visibleTickets = selectedView === 'upcoming' ? upcomingTickets : finishedList;
 
   // Formateadores auxiliares
   const formatCurrency = (val?: number) => {
@@ -355,6 +393,67 @@ const Dashboard: React.FC = () => {
         </div>
       </div>
 
+      {/* Selector de vista entre Sorteos Próximos y Pendientes */}
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(220px, 1fr))', gap: '1rem' }}>
+        <button
+          type="button"
+          onClick={() => {
+            setFilterStatus('');
+            setSelectedView('upcoming');
+          }}
+          className="card glass"
+          style={{
+            padding: '1.25rem',
+            textAlign: 'left',
+            border: selectedView === 'upcoming' ? '1px solid var(--primary)' : '1px solid transparent',
+            boxShadow: selectedView === 'upcoming' ? '0 0 0 1px rgba(59, 130, 246, 0.15)' : undefined,
+            cursor: 'pointer'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.75rem' }}>
+            <div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Sorteos Próximos</div>
+              <div style={{ fontSize: '1.35rem', fontWeight: 800, marginTop: '0.35rem' }}>{upcomingTickets.length}</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2.5rem', height: '2.5rem', borderRadius: '12px', backgroundColor: 'var(--pending-light)', color: 'var(--pending-text)' }}>
+              <Clock size={18} />
+            </div>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6 }}>
+            Ver los sorteos con estado pendiente ordenados por fecha próxima.
+          </p>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => {
+            setFilterStatus('');
+            setSelectedView('finished');
+          }}
+          className="card glass"
+          style={{
+            padding: '1.25rem',
+            textAlign: 'left',
+            border: selectedView === 'finished' ? '1px solid var(--primary)' : '1px solid transparent',
+            boxShadow: selectedView === 'finished' ? '0 0 0 1px rgba(59, 130, 246, 0.15)' : undefined,
+            cursor: 'pointer'
+          }}
+        >
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', marginBottom: '0.75rem' }}>
+            <div>
+              <div style={{ fontSize: '0.75rem', fontWeight: 700, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'var(--text-secondary)' }}>Terminados</div>
+              <div style={{ fontSize: '1.35rem', fontWeight: 800, marginTop: '0.35rem' }}>{finishedTickets}</div>
+            </div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '2.5rem', height: '2.5rem', borderRadius: '12px', backgroundColor: 'var(--success-light)', color: 'var(--success)' }}>
+              <Check size={18} />
+            </div>
+          </div>
+          <p style={{ color: 'var(--text-secondary)', fontSize: '0.85rem', lineHeight: 1.6 }}>
+            Ver todas las boletas que ya terminaron el sorteo.
+          </p>
+        </button>
+      </div>
+
       {/* Listado de Boletas */}
       {generalError && (
         <div className="card animate-fade-in" style={{ borderColor: 'var(--danger)', backgroundColor: 'var(--danger-light)', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
@@ -379,7 +478,7 @@ const Dashboard: React.FC = () => {
             </div>
           ))}
         </div>
-      ) : tickets.length === 0 ? (
+      ) : visibleTickets.length === 0 ? (
         /* Estado Vacío Premium */
         <div className="card flex-center animate-fade-in" style={{
           flexDirection: 'column',
@@ -401,12 +500,14 @@ const Dashboard: React.FC = () => {
           </div>
           <div>
             <h3 style={{ fontSize: '1.25rem', fontWeight: 700, marginBottom: '0.5rem' }}>
-              Sin resultados encontrados
+              No hay boletas en esta vista
             </h3>
             <p style={{ color: 'var(--text-secondary)', maxWidth: '400px', margin: '0 auto', fontSize: '0.95rem' }}>
               {searchQuery || filterStatus || filterGameType
-                ? 'Ninguna boleta coincide con los filtros aplicados. Intenta cambiarlos o limpiar la búsqueda.'
-                : 'Aún no tienes boletas registradas en tu cuenta. ¡Crea tu primera boleta para empezar a monitorearla!'}
+                ? 'Ninguna boleta coincide con los filtros aplicados en esta vista. Intenta cambiarlos o limpiar la búsqueda.'
+                : selectedView === 'upcoming'
+                  ? 'No hay sorteos próximos en este momento. Registra una nueva boleta para empezar a seguirlos.'
+                  : 'No hay boletas terminadas en este momento. Cambia la vista o agrega una nueva boleta.'}
             </p>
           </div>
           {!searchQuery && !filterStatus && !filterGameType ? (
@@ -427,7 +528,7 @@ const Dashboard: React.FC = () => {
           gridTemplateColumns: 'repeat(auto-fill, minmax(420px, 1fr))',
           gap: '1.5rem'
         }}>
-          {tickets.map(ticket => (
+          {visibleTickets.map(ticket => (
             <div
               key={ticket.id}
               className="ticket-stub animate-fade-in"
@@ -535,10 +636,9 @@ const Dashboard: React.FC = () => {
 
                 {/* Micro-LED de Estado */}
                 <div className="status-dot-container">
-                  <span className={`status-dot ${
-                    ticket.status === 'Ganado' ? 'status-dot-won' :
-                    ticket.status === 'Perdido' ? 'status-dot-lost' : 'status-dot-pending'
-                  }`}></span>
+                  <span className={`status-dot ${ticket.status === 'Ganado' ? 'status-dot-won' :
+                      ticket.status === 'Perdido' ? 'status-dot-lost' : 'status-dot-pending'
+                    }`}></span>
                   <span>{ticket.status}</span>
                 </div>
 
@@ -635,6 +735,14 @@ const Dashboard: React.FC = () => {
 
             {/* Formulario */}
             <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', flex: 1 }}>
+
+              {/* Aviso de error general (backend) */}
+              {formErrors.general && (
+                <div className="card" style={{ borderColor: 'var(--danger)', backgroundColor: 'var(--danger-light)', color: 'var(--danger-text)', padding: '0.75rem 1rem' }}>
+                  <strong>Atención: </strong>
+                  <span style={{ marginLeft: '0.5rem' }}>{formErrors.general}</span>
+                </div>
+              )}
 
               {/* Título (Obligatorio) */}
               <div className="form-group">
@@ -744,6 +852,7 @@ const Dashboard: React.FC = () => {
                       <option key={s} value={s}>{s}</option>
                     ))}
                   </select>
+                  {formErrors.status && <span className="form-error">{formErrors.status}</span>}
                 </div>
               </div>
 
